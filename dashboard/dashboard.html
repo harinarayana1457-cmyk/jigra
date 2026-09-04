@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Jigra Study Companion & Bazaar</title>
   <link rel="stylesheet" href="dashboard.css">
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('jigra_theme');
+      if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    })();
+  </script>
 </head>
 <body>
   <!-- Embedded SVG Definitions for Wavy Scalloped Shapes -->
@@ -65,6 +73,23 @@
 
   <!-- Main Content Viewports -->
   <main class="main-content">
+    <!-- Top Bar with Light / Dark Mode Toggle -->
+    <header class="dash-top-bar">
+      <div class="dash-top-greeting">
+        <span class="greeting-pill" id="dash-greeting-pill">✨ Focus Mode Active</span>
+      </div>
+      <div class="dash-top-actions">
+        <button class="theme-toggle-btn" id="theme-toggle-btn" title="Toggle Light / Dark Mode" aria-label="Toggle Theme">
+          <div class="theme-toggle-track">
+            <span class="theme-icon icon-light">☀️</span>
+            <span class="theme-icon icon-dark">🌙</span>
+            <div class="theme-toggle-thumb"></div>
+          </div>
+          <span class="theme-toggle-label" id="theme-toggle-text">Light Mode</span>
+        </button>
+      </div>
+    </header>
+
     <!-- Tab 1: Focus Hub -->
     <section class="tab-pane active" id="tab-focus-hub">
       <div class="pane-header">
