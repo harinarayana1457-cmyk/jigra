@@ -17,10 +17,14 @@
     soundEnabled: true,
     gameInterval: { mode: 'every_sprint', sprintsSinceLastGame: 0, minutesSinceLastGame: 0 }
   };
-  let currentState = 'idle'; // 'idle' | 'focusing' | 'distracted' | 'celebrating'
+  let currentState = 'idle'; // 'idle' | 'focusing' | 'distracted' | 'celebrating' | 'paused'
   let speechTimeout = null;
   let activeInPageGame = null;
   let currentInPageGameType = 'memory';
+  let pauseMonitoringActive = false;
+  let pauseSecondsElapsed = 0;
+  let pauseReminderIndex = 0;
+  let initialPauseTimeout = null;
 
   // Drag state
   let isDragging = false;
@@ -70,9 +74,92 @@
       currentState = 'focusing';
     } else if (timerData.state === 'BREAK') {
       currentState = 'celebrating';
+    } else if (timerData.state === 'PAUSED') {
+      currentState = 'paused';
     } else {
       currentState = 'idle';
     }
+
+    if (timerData.state === 'PAUSED') {
+      startPauseMonitoring();
+    } else {
+      stopPauseMonitoring();
+    }
+  }
+
+  function startPauseMonitoring() {
+    if (pauseMonitoringActive) return;
+    pauseMonitoringActive = true;
+    pauseSecondsElapsed = 0;
+
+    if (initialPauseTimeout) clearTimeout(initialPauseTimeout);
+    // Give a brief gentle pause before initial reminder so it feels natural
+    initialPauseTimeout = setTimeout(() => {
+      if (timerData.state === 'PAUSED' && !activeInPageGame) {
+        triggerPauseReminder(true);
+      }
+    }, 1800);
+  }
+
+  function stopPauseMonitoring() {
+    pauseMonitoringActive = false;
+    pauseSecondsElapsed = 0;
+    if (initialPauseTimeout) {
+      clearTimeout(initialPauseTimeout);
+      initialPauseTimeout = null;
+    }
+  }
+
+  function triggerPauseReminder(isInitial = false) {
+    if (timerData.state !== 'PAUSED') return;
+
+    // Gentle audio cue
+    if (typeof JigraAudio !== 'undefined' && settingsData?.soundEnabled !== false) {
+      JigraAudio.playNudge();
+    }
+
+    // Avatar attention wiggle
+    const avatarEl = shadowRoot?.getElementById('jigra-avatar');
+    if (avatarEl) {
+      avatarEl.classList.remove('jigra-wobble-nudge');
+      void avatarEl.offsetWidth; // Trigger DOM reflow
+      avatarEl.classList.add('jigra-wobble-nudge');
+      setTimeout(() => avatarEl.classList.remove('jigra-wobble-nudge'), 700);
+    }
+
+    const remaining = getRemainingSeconds();
+    const formatted = formatTime(remaining);
+    const streak = economyData?.streakDays || 1;
+    const compName = companionData?.name || 'Jigra';
+
+    const reminders = [
+      `⏰ Psst! You have ${formatted} left in this sprint. Let's finish strong!`,
+      `👀 Don't get trapped scrolling! Your ${streak}d study streak is waiting for you.`,
+      `🔥 ${compName} is ready when you are! Resume now to keep earning Sparks.`,
+      `📚 The hardest step is restarting—you've got this! Ready to dive back in?`,
+      `⚡ Every focused minute levels up ${compName}! Ready to crush the rest?`
+    ];
+
+    const messageText = isInitial
+      ? `⏸️ Study session paused! Take a quick breath, but don't lose your focus groove!`
+      : reminders[pauseReminderIndex % reminders.length];
+
+    pauseReminderIndex++;
+
+    showSpeechBubble({
+      title: '⏸️ Study Paused',
+      text: messageText,
+      actionText: '▶ Resume Session',
+      onAction: async () => {
+        await chrome.runtime.sendMessage({ type: 'RESUME_TIMER' });
+        showSpeechBubble({
+          title: '🚀 Back in the Zone!',
+          text: `Focus sprint resumed! Crushing the next ${formatted}!`,
+          duration: 3500
+        });
+      },
+      duration: 8000
+    });
   }
 
   function getRemainingSeconds() {
@@ -102,7 +189,15 @@
     const remaining = getRemainingSeconds();
     const formattedTime = formatTime(remaining);
     const isBreak = timerData.state === 'BREAK';
+    const isPaused = timerData.state === 'PAUSED';
     const svgContent = JigraRenderer.renderSVG(companionData, currentState, 84);
+
+    let pillClass = '';
+    if (isBreak) pillClass = 'pill-break';
+    else if (isPaused) pillClass = 'pill-paused';
+
+    let pillLabel = formattedTime;
+    if (isPaused) pillLabel = `⏸️ ${formattedTime}`;
 
     // Check game interval access
     const gameAccess = JigraStorage.checkGameAccess({
@@ -153,7 +248,7 @@
         <!-- Actions Row: Focus, Play Game, Bazaar -->
         <div class="jigra-hud-actions">
           <button class="jigra-hud-btn jigra-btn-primary" id="jigra-hud-timer-btn" title="Toggle study session">
-            ${timerData.state === 'FOCUS' ? '⏸ Pause' : '▶ Focus'}
+            ${timerData.state === 'FOCUS' ? '⏸ Pause' : timerData.state === 'PAUSED' ? '▶ Resume Focus' : '▶ Focus'}
           </button>
           <button class="jigra-hud-btn jigra-btn-game ${gameAccess.allowed ? '' : 'is-locked'}" id="jigra-hud-game-btn" title="${gameAccess.reason}">
             ${gameAccess.allowed ? '🎮 Play' : '🔒 Play'}
@@ -170,9 +265,9 @@
       </div>
 
       <!-- Timer Pill -->
-      <div class="jigra-timer-pill ${isBreak ? 'pill-break' : ''}" id="jigra-pill">
+      <div class="jigra-timer-pill ${pillClass}" id="jigra-pill" title="${isPaused ? 'Paused - Click to Resume' : ''}">
         <div class="jigra-status-dot"></div>
-        <span id="jigra-pill-time">${formattedTime}</span>
+        <span id="jigra-pill-time">${pillLabel}</span>
       </div>
     `;
 
@@ -183,6 +278,21 @@
     shadowRoot.getElementById('jigra-hud-close')?.addEventListener('click', (e) => {
       e.stopPropagation();
       toggleHUD(false);
+    });
+
+    // Pill click: resume if paused, otherwise toggle HUD
+    shadowRoot.getElementById('jigra-pill')?.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      if (timerData.state === 'PAUSED') {
+        await chrome.runtime.sendMessage({ type: 'RESUME_TIMER' });
+        showSpeechBubble({
+          title: '🚀 Resumed',
+          text: 'Focus session resumed! Keep that momentum going!',
+          duration: 3500
+        });
+      } else {
+        toggleHUD();
+      }
     });
 
     shadowRoot.getElementById('jigra-hud-bazaar-btn')?.addEventListener('click', (e) => {
@@ -428,14 +538,39 @@
     }
   }
 
-  function showSpeechBubble(message, duration = 4000) {
+  function showSpeechBubble(content, duration = 4500) {
     const bubble = shadowRoot.getElementById('jigra-bubble');
     if (!bubble) return;
 
-    bubble.textContent = message;
+    if (speechTimeout) clearTimeout(speechTimeout);
+
+    if (typeof content === 'string') {
+      bubble.innerHTML = `<div class="jigra-bubble-body">${content}</div>`;
+    } else if (content && typeof content === 'object') {
+      duration = content.duration || duration || 6000;
+      let html = '';
+      if (content.title) {
+        html += `<div class="jigra-bubble-title">${content.title}</div>`;
+      }
+      if (content.text) {
+        html += `<div class="jigra-bubble-body">${content.text}</div>`;
+      }
+      if (content.actionText) {
+        html += `<button class="jigra-bubble-btn" id="jigra-bubble-act-btn">${content.actionText}</button>`;
+      }
+      bubble.innerHTML = html;
+
+      if (content.actionText && content.onAction) {
+        const actBtn = bubble.querySelector('#jigra-bubble-act-btn');
+        actBtn?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          content.onAction();
+        });
+      }
+    }
+
     bubble.classList.add('visible');
 
-    if (speechTimeout) clearTimeout(speechTimeout);
     speechTimeout = setTimeout(() => {
       bubble.classList.remove('visible');
     }, duration);
@@ -447,7 +582,22 @@
 
     const timeSpan = shadowRoot?.getElementById('jigra-pill-time');
     if (timeSpan) {
-      timeSpan.textContent = formatted;
+      if (timerData.state === 'PAUSED') {
+        timeSpan.textContent = `⏸️ ${formatted}`;
+      } else {
+        timeSpan.textContent = formatted;
+      }
+    }
+
+    // While paused, track elapsed pause time and trigger periodic reminders
+    if (timerData.state === 'PAUSED' && pauseMonitoringActive) {
+      pauseSecondsElapsed++;
+      // Every 35 seconds of paused state, trigger a friendly reminder if no game is running
+      if (pauseSecondsElapsed > 0 && pauseSecondsElapsed % 35 === 0) {
+        if (!activeInPageGame) {
+          triggerPauseReminder(false);
+        }
+      }
     }
   }
 
@@ -472,6 +622,11 @@
         timerData = payload.timer;
         updateCurrentStateFromTimer();
         renderCompanionUI();
+      } else if (type === 'PAUSE_REMINDER_NUDGE') {
+        // Nudge from service worker or tab broadcast
+        if (timerData.state === 'PAUSED' && !activeInPageGame) {
+          triggerPauseReminder(false);
+        }
       } else if (type === 'DISTRACTION_ALERT') {
         // Distraction detected!
         currentState = 'distracted';

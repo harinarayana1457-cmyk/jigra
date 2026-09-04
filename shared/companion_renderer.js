@@ -75,6 +75,18 @@
           <polygon points="65,42 67,47 72,47 68,50 70,55 65,52 60,55 62,50 58,47 63,47" fill="#fbbf24" stroke="#d97706" stroke-width="1"/>
           <path d="M 50 58 Q 54 63 58 58" stroke="#1f2937" stroke-width="2.5" fill="none" stroke-linecap="round"/>
         `;
+      } else if (state === 'paused') {
+        // Expectant waiting puppy eyes (curiously tilted, waiting for user to return)
+        eyeMarkup = `
+          <ellipse cx="43" cy="47" rx="4.2" ry="5.8" fill="#1f2937" />
+          <ellipse cx="65" cy="47" rx="4.2" ry="5.8" fill="#1f2937" />
+          <circle cx="45" cy="44" r="2" fill="#ffffff" />
+          <circle cx="67" cy="44" r="2" fill="#ffffff" />
+          <circle cx="41" cy="49" r="1" fill="#ffffff" />
+          <circle cx="63" cy="49" r="1" fill="#ffffff" />
+          <!-- Expectant, curious smile -->
+          <path d="M 50 56 Q 54 59 58 56" stroke="#1f2937" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+        `;
       } else {
         // Default idle cute blinking eyes
         eyeMarkup = `
@@ -180,7 +192,7 @@
         `;
       }
 
-      // Distraction exclamation bubble
+      // Distraction exclamation bubble or Paused waiting indicator
       let alertBubble = '';
       if (state === 'distracted') {
         alertBubble = `
@@ -188,6 +200,14 @@
             <ellipse cx="14" cy="14" rx="12" ry="10" fill="#ef4444" stroke="#b91c1c" stroke-width="1.5"/>
             <polygon points="10,22 14,28 16,22" fill="#ef4444"/>
             <text x="14" y="18" text-anchor="middle" font-family="sans-serif" font-weight="900" font-size="12" fill="#ffffff">!</text>
+          </g>
+        `;
+      } else if (state === 'paused') {
+        alertBubble = `
+          <g class="jigra-anim-pause-bubble" transform="translate(68, 8)">
+            <circle cx="12" cy="12" r="11" fill="#f59e0b" stroke="#d97706" stroke-width="1.5" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.3))"/>
+            <rect x="8.5" y="7" width="2.5" height="10" rx="1.2" fill="#ffffff"/>
+            <rect x="13" y="7" width="2.5" height="10" rx="1.2" fill="#ffffff"/>
           </g>
         `;
       }

@@ -51,6 +51,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let animState = 'idle';
     if (timer.state === 'FOCUS') animState = 'focusing';
     else if (timer.state === 'BREAK') animState = 'celebrating';
+    else if (timer.state === 'PAUSED') animState = 'paused';
 
     companionAvatar.innerHTML = JigraRenderer.renderSVG(companion, animState, 50);
     companionName.textContent = companion.name;

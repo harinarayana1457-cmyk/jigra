@@ -168,6 +168,36 @@
 
       osc.start();
       osc.stop(ctx.currentTime + 0.15);
+    },
+
+    // Gentle 2-tone melodic nudge chime when avatar reminds user to return to studying
+    playNudge() {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+
+      const now = ctx.currentTime;
+      const notes = [
+        { f: 523.25, time: now, d: 0.14, gain: 0.16 },       // C5
+        { f: 783.99, time: now + 0.12, d: 0.28, gain: 0.18 } // G5
+      ];
+
+      notes.forEach((n) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(n.f, n.time);
+        osc.frequency.exponentialRampToValueAtTime(n.f * 1.02, n.time + n.d);
+
+        gain.gain.setValueAtTime(n.gain, n.time);
+        gain.gain.exponentialRampToValueAtTime(0.001, n.time + n.d);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(n.time);
+        osc.stop(n.time + n.d);
+      });
     }
   };
 

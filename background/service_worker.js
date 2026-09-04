@@ -15,6 +15,7 @@ try {
 }
 
 const ALARM_NAME = 'jigra_pomodoro_timer';
+const PAUSE_NUDGE_ALARM = 'jigra_pause_nudge';
 const DISTRACTING_DOMAINS = [
   'tiktok.com',
   'instagram.com',
@@ -37,8 +38,31 @@ chrome.runtime.onInstalled.addListener(async (details) => {
   chrome.action.setBadgeText({ text: '' });
 });
 
-// Alarm Listener - Handles Timer Completion
+// Alarm Listener - Handles Timer Completion and Background Pause Reminders
 chrome.alarms.onAlarm.addListener(async (alarm) => {
+  if (alarm.name === PAUSE_NUDGE_ALARM) {
+    const data = await JigraStorage.get();
+    if (data.timer.state === 'PAUSED') {
+      const remMins = Math.max(1, Math.round((data.timer.remainingSeconds || 60) / 60));
+      const compName = data.companion?.name || 'Jigra';
+
+      chrome.notifications.create({
+        type: 'basic',
+        iconUrl: chrome.runtime.getURL('icons/icon128.png'),
+        title: `⏸️ ${compName} is waiting for you!`,
+        message: `Your study sprint is paused with ${remMins}m left. Tap to jump back into focus!`
+      });
+
+      broadcastMessage({
+        type: 'PAUSE_REMINDER_NUDGE',
+        payload: { remainingSeconds: data.timer.remainingSeconds }
+      });
+    } else {
+      chrome.alarms.clear(PAUSE_NUDGE_ALARM);
+    }
+    return;
+  }
+
   if (alarm.name !== ALARM_NAME) return;
 
   const data = await JigraStorage.get();
@@ -120,6 +144,31 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
   }
 });
 
+// Notification click handler: clicking notification resumes paused session or focuses
+chrome.notifications.onClicked.addListener(async () => {
+  const data = await JigraStorage.get();
+  if (data.timer.state === 'PAUSED') {
+    const remaining = data.timer.remainingSeconds > 0 ? data.timer.remainingSeconds : 60;
+    const targetTimestamp = Date.now() + remaining * 1000;
+    const targetState = data.timer.previousRunningState || 'FOCUS';
+
+    const updatedTimer = {
+      ...data.timer,
+      state: targetState,
+      targetTimestamp
+    };
+    await JigraStorage.updateTimer(updatedTimer);
+
+    chrome.alarms.clear(ALARM_NAME, () => {
+      chrome.alarms.create(ALARM_NAME, { when: targetTimestamp });
+    });
+    chrome.alarms.clear(PAUSE_NUDGE_ALARM);
+
+    broadcastMessage({ type: 'STATE_CHANGED', payload: { timer: updatedTimer } });
+    updateBadge(targetState === 'FOCUS' ? 'FOC' : 'BRK', targetState === 'FOCUS' ? '#f97316' : '#10b981');
+  }
+});
+
 // Update extension icon badge text
 function updateBadge(text, color = '#f97316') {
   try {
@@ -173,6 +222,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         chrome.alarms.clear(ALARM_NAME, () => {
           chrome.alarms.create(ALARM_NAME, { when: targetTimestamp });
         });
+        chrome.alarms.clear(PAUSE_NUDGE_ALARM);
 
         broadcastMessage({ type: 'STATE_CHANGED', payload: { timer: updatedTimer } });
         updateBadge('FOC', '#f97316');
@@ -191,13 +241,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           : data.timer.remainingSeconds;
 
         chrome.alarms.clear(ALARM_NAME);
+        chrome.alarms.create(PAUSE_NUDGE_ALARM, { delayInMinutes: 2, periodInMinutes: 2 });
 
         const updatedTimer = {
           ...data.timer,
           state: 'PAUSED',
           previousRunningState: data.timer.state,
           remainingSeconds: remaining,
-          targetTimestamp: null
+          targetTimestamp: null,
+          pausedAt: Date.now()
         };
         await JigraStorage.updateTimer(updatedTimer);
 
@@ -213,6 +265,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           return sendResponse({ success: false });
         }
 
+        chrome.alarms.clear(PAUSE_NUDGE_ALARM);
         const remaining = data.timer.remainingSeconds > 0 ? data.timer.remainingSeconds : 60;
         const targetTimestamp = Date.now() + remaining * 1000;
         const targetState = data.timer.previousRunningState || (data.timer.duration <= 600 ? 'BREAK' : 'FOCUS');
@@ -254,6 +307,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           chrome.alarms.clear(ALARM_NAME, () => {
             chrome.alarms.create(ALARM_NAME, { when: targetTimestamp });
           });
+          chrome.alarms.clear(PAUSE_NUDGE_ALARM);
 
           broadcastMessage({ type: 'STATE_CHANGED', payload: { timer: updatedTimer } });
           updateBadge('FOC', '#f97316');
@@ -277,6 +331,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           chrome.alarms.clear(ALARM_NAME, () => {
             chrome.alarms.create(ALARM_NAME, { when: targetTimestamp });
           });
+          chrome.alarms.clear(PAUSE_NUDGE_ALARM);
 
           broadcastMessage({ type: 'STATE_CHANGED', payload: { timer: updatedTimer } });
           updateBadge('FOC', '#f97316');
@@ -292,6 +347,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         const duration = Math.round(modeConfig.focusMinutes * 60);
 
         chrome.alarms.clear(ALARM_NAME);
+        chrome.alarms.clear(PAUSE_NUDGE_ALARM);
 
         const updatedTimer = {
           state: 'IDLE',
@@ -326,6 +382,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         chrome.alarms.clear(ALARM_NAME, () => {
           chrome.alarms.create(ALARM_NAME, { when: targetTimestamp });
         });
+        chrome.alarms.clear(PAUSE_NUDGE_ALARM);
 
         broadcastMessage({ type: 'STATE_CHANGED', payload: { timer: updatedTimer } });
         updateBadge('BRK', '#10b981');
