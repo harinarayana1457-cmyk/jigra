@@ -1,124 +1,187 @@
-# Jigra ⚡ — Focus Companion & YouTube Study Shield
+<div align="center">
 
-**Jigra** is an end-to-end browser productivity extension built with **Chrome Extension Manifest V3**, Vanilla JavaScript, procedural Web Audio, and modern CSS glassmorphism.
+# ⚡ JIGRA
+### Gamified Focus Companion, YouTube Study Shield & Micro-Break Brain Reset Engine
 
-Designed specifically for students, researchers, and developers, Jigra prevents digital doom-scrolling (especially YouTube Shorts & recommendations), provides a gamified desktop companion that lives on screen, and rewards completed study blocks with quick 60-second micro-break games, currency (**Sparks**), and companion skins & evolutions.
+[![Platform](https://img.shields.io/badge/Platform-Chrome%20Extension%20MV3-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white)](https://developer.chrome.com/docs/extensions/mv3/intro/)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES6%2B%20Vanilla-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![Web Audio](https://img.shields.io/badge/Audio-Procedural%20Web%20Audio-FF5722?style=for-the-badge&logo=soundcharts&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API)
+[![UI Technology](https://img.shields.io/badge/UI-Shadow%20DOM%20%2B%20Glassmorphism-9C27B0?style=for-the-badge&logo=w3c&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM)
+[![Compatibility](https://img.shields.io/badge/Browsers-Chrome%20%7C%20Brave%20%7C%20Edge%20%7C%20Arc-00C7B7?style=for-the-badge&logo=brave&logoColor=white)](https://github.com/harinarayana1457-cmyk/jigra)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](https://opensource.org/licenses/MIT)
+
+<p align="center">
+  <b>Jigra</b> is an all-in-one browser focus extension engineered with <b>Chrome Extension Manifest V3</b>, procedural Web Audio synthesis, and isolated <b>Shadow DOM</b> architecture. Designed specifically for students, researchers, and developers, Jigra halts algorithmic doom-scrolling (suppressing YouTube Shorts and recommendations), provides an edge-snapping interactive desktop study companion, and rewards completed Pomodoro sprints with 60-second micro-break games, currency (<b>Sparks</b>), and companion evolutions.
+</p>
+
+[✨ Key Features](#key-features) • [🏛️ Architecture](#system-architecture) • [🚀 Installation](#installation-guide) • [🎮 Micro-Break Arcade](#micro-break-brain-resets) • [🛍️ Cosmetics & Evolution](#economy-evolution--customization-bazaar) • [📁 Project Structure](#project-structure) • [🧪 Testing Checklist](#testing-checklist) • [🔗 Connect](#connect--contribute)
+
+</div>
 
 ---
 
 ## 🌟 Key Features
 
-### 1. Context-Aware YouTube Study Shield
-- **Smart UI Stripper:** Automatically removes the YouTube recommendation sidebar (`#secondary`), comments feed (`#comments`), homepage infinite scroll wall, end-screen video cards, and Shorts carousels when a focus session is active.
-- **Shorts Interceptor:** Detects and halts YouTube Shorts navigation (`/shorts/*`) instantly on YouTube's SPA (Single Page Application) without reloading the page.
-- **Deterrent Override:** In *Ultra Focus Mode*, leaving a study sprint early requires holding an emergency override button for 5 full seconds.
-- **Distraction-Free Playback:** Centers the primary video player and search bar so you can watch tutorials, lectures, and documentaries without visual rabbit holes.
+### 1. 🛡️ Context-Aware YouTube Study Shield
+* **Smart UI Stripper**: Automatically strips YouTube recommendation feeds (`#secondary`), comments (`#comments`), infinite home scroll walls, and end-screen suggested tiles while a focus sprint is active.
+* **Shorts Interceptor**: Intercepts `/shorts/*` single-page transitions instantly without page reloads, displaying an immediate focus shield modal.
+* **5-Second Deterrent Lock**: In *Ultra Focus Mode*, leaving a sprint early requires deliberately holding down an override trigger for 5 continuous seconds.
+* **Distraction-Free Video Layout**: Centers educational lectures, documentaries, and tutorials with zero algorithmic visual clutter.
 
-### 2. Interactive Floating Screen Companion
-- **Encapsulated Widget:** Injected using a closed Shadow DOM so website styles never interfere with the companion.
-- **Physics & Snapping:** Draggable with mouse or touch, and smoothly docks/snaps to screen edges.
-- **State-Driven Emotes & Animations:**
-  - **Focusing State:** Gentle breathing, reading study notes, focused sparkling eyes, mini countdown pill.
-  - **Distraction State:** Taps against the glass (`AudioContext` knock sound), shakes the avatar, and displays warning speech bubbles if you visit distracting domains or idle.
-  - **Milestone Celebration:** Victory dance, procedural 8-bit fanfare, and confetti bursts (`canvas-confetti`) when a Pomodoro block ends.
-- **Mini HUD:** Click the companion anytime to check your streak, level, remaining sprint time, and jump directly to the Bazaar.
+### 2. 🪐 Interactive Floating Screen Companion
+* **Closed Shadow DOM Encapsulation**: Injected cleanly into every web page without inheriting third-party CSS or interfering with site styles.
+* **Physics & Edge-Snapping**: Fully draggable with mouse or trackpad, smoothly gliding and docking to screen borders.
+* **Reactive Animated Emote States**:
+  * **Focus State**: Gentle breathing motion, reading study notes, focused sparkling eyes, with an integrated real-time countdown pill.
+  * **Distraction State**: AudioContext knock sound against the screen, shaking avatar, and warning speech bubbles if visiting blacklisted distraction domains.
+  * **Milestone Fanfare**: Victory animation, procedural 8-bit chiptune fanfare, and full-screen confetti bursts (`canvas-confetti`) when a Pomodoro block completes.
+* **Mini HUD**: Click the companion at any time to inspect current streaks, level progression, sprint clocks, and open the Bazaar.
 
-### 3. Micro-Break Brain Resets (60-Second Mini-Games)
-- When a focus session finishes, the extension prompts a dopamine-reset micro-break:
-  - **6-Pair Memory Matrix:** 12 cards with 3D flip physics, matching pairs of learning icons under a 60-second timer.
-  - **Speed Quote Typer:** Cyber terminal typing sprint testing WPM and accuracy on curated stoic and productivity quotes.
-- **Strict 60-Second Enforcement:** When the clock hits 0:00, the game freezes, awards **+5 bonus Sparks**, and transitions the student to the next sprint.
+### 3. 🎮 Micro-Break Brain Resets (60-Second Mini-Games)
+* **6-Pair Memory Matrix**: 12 cards with 3D flip physics, matching pairs of learning icons under a strict 60-second countdown.
+* **Speed Quote Typer**: Cyberpunk terminal typing sprint testing WPM and accuracy on curated productivity and stoic literature quotes.
+* **Strict 60-Second Ceiling**: When the timer expires, the game pauses immediately, awards **+5 bonus Sparks**, and transitions the student into the next focus block.
 
-### 4. Economy, Evolution & Customization Bazaar
-- **Sparks Wallet:** Earn +10 Sparks per standard sprint (+20 for deep, +25 for ultra) and +5 per mini-game.
-- **Cosmetics Bazaar:** Purchase and instantly equip:
-  - **Hats & Glasses:** Study Specs, Arcane Wizard Hat, Gold Monarch Crown, Cyber Headphones.
-  - **Companion Skins:** Ignis Ember 🔥, Cryo Frost ❄️, Jade Drake 🐲, Astral Void 🌌.
-  - **Magical Auras:** Cosmic Stardust ✨, Cyber Matrix 🟩, Zen Bloom 🌸.
-- **Evolution Tree:** As your study hours accumulate, your companion evolves across 4 stages:
-  1. *Flame Sprout* (Lv. 1)
-  2. *Adept Scholar* (Lv. 5)
-  3. *Guardian Phoenix* (Lv. 10)
-  4. *Celestial Sage* (Lv. 20)
+### 4. 🛍️ Economy, Evolution & Customization Bazaar
+* **Sparks Wallet**: Earn +10 Sparks per standard sprint (+20 for deep, +25 for ultra) and +5 per mini-game session.
+* **Cosmetics Bazaar**: Unlock and equip:
+  * **Hats & Eyewear**: Study Specs, Arcane Wizard Hat, Gold Monarch Crown, Cyber Headphones.
+  * **Companion Skins**: Ignis Ember 🔥, Cryo Frost ❄️, Jade Drake 🐲, Astral Void 🌌.
+  * **Auras**: Cosmic Stardust ✨, Cyber Matrix 🟩, Zen Bloom 🌸.
+* **4-Tier Evolution Ladder**:
+  1. *Flame Sprout* (Lv. 1) &rarr; 2. *Adept Scholar* (Lv. 5) &rarr; 3. *Guardian Phoenix* (Lv. 10) &rarr; 4. *Celestial Sage* (Lv. 20).
 
 ---
 
-## 📁 Project Architecture
+## 🏛️ System Architecture
 
-```
-hyperbloom/
-├── manifest.json                     # Chrome Extension Manifest V3 configuration
-├── icons/                            # Extension icons (16, 32, 48, 128 px)
-│   ├── icon16.png
-│   ├── icon32.png
-│   ├── icon48.png
-│   └── icon128.png
-├── background/
-│   └── service_worker.js             # MV3 background worker, chrome.alarms, notifications, economy
-├── content_scripts/
-│   ├── youtube_shield.css            # YouTube DOM suppression styles
-│   ├── youtube_shield.js             # YouTube SPA navigation hook & Shorts interceptor
-│   ├── companion_overlay.css         # Shadow DOM floating companion styles & animations
-│   ├── companion_overlay.js          # Draggable companion controller with reactive states
-│   └── confetti.js                   # Zero-dependency canvas confetti engine
-├── popup/
-│   ├── popup.html                    # Quick popup window
-│   ├── popup.css                     # Circular timer & neon UI styling
-│   └── popup.js                      # Popup controller & real-time sync
-├── dashboard/
-│   ├── dashboard.html                # Full-page application: Hub, Bazaar, Evolution, Arcade
-│   ├── dashboard.css                 # Glassmorphic cyber theme
-│   ├── dashboard.js                  # Dashboard state manager
-│   └── games/
-│       ├── memory_match.js           # 6-Pair Memory Matrix game
-│       └── speed_typer.js            # 60s Speed Quote Typer game
-├── shared/
-│   ├── storage.js                    # chrome.storage.local schema, helpers & default state
-│   ├── audio.js                      # Web Audio API procedural sound synthesizer
-│   └── companion_renderer.js         # SVG vector companion generator with cosmetics & emotes
-└── README.md
+```mermaid
+flowchart TD
+    subgraph UI ["User Entry & Controls"]
+        A["Toolbar Popup / Dashboard"] -->|Configure & Start Sprint| B["Service Worker Engine"]
+        A -->|Customize Companion & Games| C["Options Dashboard"]
+    end
+
+    subgraph CoreEngine ["Background Controller (MV3)"]
+        B --> D["chrome.alarms (Sprint Clocks)"]
+        B --> E["chrome.storage.local (Sync State & Sparks)"]
+        D -->|Sprint Finish / Tick| F["Broadcast State to Active Tabs"]
+    end
+
+    subgraph ContentLayer ["Content Injection Layer"]
+        F -->|*://*.youtube.com/*| G["YouTube Shield (CSS Suppression & Shorts Blocker)"]
+        F -->|<all_urls>| H["Shadow DOM Companion Overlay"]
+        H --> I["Reactive Emote Animations & Procedural Audio"]
+        H --> J["60s Break Arcade: Memory Matrix / Speed Typer"]
+    end
+
+    subgraph FeedbackLoop ["Gamification & Reward Cycle"]
+        J -->|Sprint / Game Complete| K["+Sparks Reward & Evolution XP"]
+        K --> E
+        E -->|Hot-Reload Equipped Skin & Hat| H
+    end
 ```
 
 ---
 
-## 🚀 How to Load and Test in Chrome / Brave / Edge
+## 🚀 Installation Guide
 
-1. Open your Chromium-based browser (Google Chrome, Brave, Microsoft Edge, Arc, etc.).
-2. Navigate to the extensions page:
-   - Chrome: `chrome://extensions/`
-   - Brave: `brave://extensions/`
-   - Edge: `edge://extensions/`
-3. Toggle on **"Developer mode"** in the top-right corner.
-4. Click **"Load unpacked"**.
-5. Select this project folder:
-   ```
-   c:\Users\Avvari\OneDrive\Desktop\hyperbloom
-   ```
-6. Jigra will appear in your extension toolbar! Pin it for quick access.
+Works on any modern Chromium browser (**Google Chrome**, **Brave**, **Microsoft Edge**, **Arc**, **Opera**).
+
+### 1. Clone or Download the Repository
+```bash
+git clone https://github.com/harinarayana1457-cmyk/jigra.git
+cd jigra
+```
+
+### 2. Load into Your Browser
+1. Open your browser and navigate to the extensions management tab:
+   * **Chrome**: `chrome://extensions/`
+   * **Brave**: `brave://extensions/`
+   * **Edge**: `edge://extensions/`
+2. Toggle on **"Developer mode"** (typically in the top-right corner).
+3. Click the **"Load unpacked"** button.
+4. Select the cloned **`jigra`** root directory (containing `manifest.json`).
+5. **Jigra** is now active! Pin it to your extension bar for 1-click access.
 
 ---
 
 ## 🧪 Testing Checklist
 
-1. **Popup & Timer Start:**
-   - Click the Jigra extension icon in your toolbar.
-   - Switch between **Standard (25m)**, **Deep Focus (45m)**, and **Ultra (50m)**.
-   - Click **Start Focus** — notice the circular timer countdown and the companion updating to its focusing state.
-2. **YouTube Shield:**
-   - Go to `https://www.youtube.com/`.
-   - Notice home recommendations are replaced with the gentle Jigra Focus placeholder.
-   - Open any tutorial video: recommendations (`#secondary`) and comments (`#comments`) are stripped.
-   - Try navigating to `https://www.youtube.com/shorts/`: the interceptor immediately blocks the video and displays the "Focus Shield Triggered" modal.
-3. **Screen Companion:**
-   - Open any website (e.g. Wikipedia, GitHub, MDN).
-   - See the floating flame companion in the bottom right corner.
-   - Drag it anywhere on your screen and release; it smoothly docks to the edge.
-   - Click it to toggle the mini HUD and check your Sparks wallet.
-4. **Micro-Break Mini-Games:**
-   - Click **Open Bazaar & Games** or skip to break.
-   - Play the **6-Pair Memory Matrix** or **Speed Quote Typer**.
-   - Notice the 60-second timer countdown, live stats, victory sound, and +5 bonus Sparks awarded to your wallet upon completion.
-5. **Cosmetics Bazaar:**
-   - Navigate to the **Cosmetics Bazaar** tab.
-   - Spend your initial 50 Sparks bonus on **Study Specs** or save up for the **Arcane Wizard Hat** or **Cryo Frost** skin.
-   - Click **Equip** and observe the companion update in the showcase and on your active tabs immediately!
+Follow this checklist to verify all subsystems:
+
+1. **Popup & Timer Start**:
+   * Click the Jigra icon in your toolbar.
+   * Choose between **Standard (25m)**, **Deep Focus (45m)**, or **Ultra (50m)**.
+   * Click **Start Focus** &rarr; verify the circular countdown begins and the companion shifts into its focused reading animation.
+2. **YouTube Shield Verification**:
+   * Navigate to `https://www.youtube.com/`.
+   * Verify home recommendations are replaced with the clean Jigra focus placeholder.
+   * Open any tutorial: verify sidebar recommendations (`#secondary`) and comments (`#comments`) are stripped.
+   * Open `https://www.youtube.com/shorts/`: verify the interceptor halts the video and presents the focus shield modal.
+3. **Screen Companion Verification**:
+   * Open any website (e.g. Wikipedia, GitHub).
+   * Notice the floating flame companion docked in the bottom-right corner.
+   * Drag the companion anywhere on the viewport; observe smooth edge snapping.
+   * Click the avatar to open the mini HUD and check your current level, streak, and Sparks.
+4. **Micro-Break Mini-Games**:
+   * Complete a sprint or trigger a break.
+   * Play the **6-Pair Memory Matrix** or **Speed Quote Typer**.
+   * Verify the 60-second hard countdown, completion chime, and +5 bonus Sparks award.
+5. **Cosmetics Bazaar**:
+   * Open the **Cosmetics Bazaar** tab.
+   * Spend your starting bonus on **Study Specs** or save up for the **Arcane Wizard Hat** or **Cryo Frost** skin.
+   * Click **Equip** and observe the companion update across all open tabs immediately.
+
+---
+
+## 📁 Project Structure
+
+```text
+jigra/
+├── background/
+│   └── service_worker.js         # Manifest V3 worker, chrome.alarms, notifications & state dispatch
+├── content_scripts/
+│   ├── youtube_shield.css        # Zero-lag YouTube DOM recommendation suppression
+│   ├── youtube_shield.js         # YouTube SPA navigation hook & Shorts interceptor
+│   ├── companion_overlay.css     # Shadow DOM floating companion styles, themes & keyframes
+│   ├── companion_overlay.js      # Draggable companion controller with reactive state machines
+│   └── confetti.js               # Lightweight zero-dependency canvas confetti engine
+├── dashboard/
+│   ├── dashboard.html            # Hub, Cosmetics Bazaar, Evolution Tree & Arcade
+│   ├── dashboard.css             # Glassmorphic cyber theme & layout styling
+│   ├── dashboard.js              # Dashboard state manager & event listeners
+│   └── games/
+│       ├── memory_match.js       # 6-Pair Memory Matrix 3D card game
+│       └── speed_typer.js        # 60-second Speed Quote Typer game
+├── popup/
+│   ├── popup.html                # Clean toolbar popup window
+│   ├── popup.css                 # Circular neon timer styling
+│   └── popup.js                  # Popup sprint controller & real-time sync
+├── shared/
+│   ├── storage.js                # chrome.storage.local schema, migrations & helpers
+│   ├── audio.js                  # Web Audio API procedural sound synthesizer (fanfare, knocks)
+│   └── companion_renderer.js     # SVG vector companion generator with cosmetics & emotes
+├── icons/                        # Extension icons (16, 32, 48, 128 px)
+│   ├── icon16.png
+│   ├── icon32.png
+│   ├── icon48.png
+│   └── icon128.png
+├── manifest.json                 # Chrome Extension Manifest V3 configuration
+├── .gitignore                    # Production ignore rules
+└── README.md                     # Project documentation
+```
+
+---
+
+## 🔗 Connect & Contribute
+
+* **Author**: [Hari Narayana (@harinarayana1457-cmyk)](https://github.com/harinarayana1457-cmyk)
+* **LinkedIn**: [![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/hari-narayana-035ba1389/)
+* Feature requests, feedback, and pull requests are warmly welcomed!
+
+---
+
+## 📄 License
+
+* Distributed under the **[MIT License](https://opensource.org/licenses/MIT)**.
