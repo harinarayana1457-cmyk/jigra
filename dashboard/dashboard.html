@@ -7,6 +7,15 @@
   <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
+  <!-- Embedded SVG Definitions for Wavy Scalloped Shapes -->
+  <svg width="0" height="0" style="position: absolute; pointer-events: none;" aria-hidden="true">
+    <defs>
+      <clipPath id="wavy-scallop-clip" clipPathUnits="objectBoundingBox">
+        <path d="M 0.4502 0.0665 Q 0.5 0.005 0.5498 0.0665 Q 0.5996 0.1281 0.6736 0.0997 Q 0.7475 0.0713 0.7599 0.1496 Q 0.7722 0.2278 0.8504 0.2402 Q 0.9287 0.2525 0.9003 0.3265 Q 0.8719 0.4004 0.9335 0.4502 Q 0.995 0.5 0.9335 0.5498 Q 0.8719 0.5996 0.9003 0.6736 Q 0.9287 0.7475 0.8504 0.7599 Q 0.7722 0.7722 0.7599 0.8504 Q 0.7475 0.9287 0.6736 0.9003 Q 0.5996 0.8719 0.5498 0.9335 Q 0.5 0.995 0.4502 0.9335 Q 0.4004 0.8719 0.3265 0.9003 Q 0.2525 0.9287 0.2402 0.8504 Q 0.2278 0.7722 0.1496 0.7599 Q 0.0713 0.7475 0.0997 0.6736 Q 0.1281 0.5996 0.0665 0.5498 Q 0.005 0.5 0.0665 0.4502 Q 0.1281 0.4004 0.0997 0.3265 Q 0.0713 0.2525 0.1496 0.2402 Q 0.2278 0.2278 0.2402 0.1496 Q 0.2525 0.0713 0.3265 0.0997 Q 0.4004 0.1281 0.4502 0.0665 Z" />
+      </clipPath>
+    </defs>
+  </svg>
+
   <!-- Sidebar Navigation -->
   <aside class="sidebar">
     <div class="brand-section">
@@ -65,14 +74,25 @@
 
       <div class="focus-hub-grid">
         <!-- Main Hub Timer -->
-        <div class="card hub-timer-card">
+        <div class="card hub-timer-card wavy-timer-card">
           <div class="hub-timer-modes">
             <button class="hub-mode-btn active" data-mode="standard">Standard (25m)</button>
             <button class="hub-mode-btn" data-mode="focus">Deep (45m)</button>
             <button class="hub-mode-btn" data-mode="ultra">Ultra (50m)</button>
           </div>
 
-          <div class="hub-timer-clock" id="hub-clock-display">25:00</div>
+          <!-- Wavy Scalloped Clock Widget matching user reference -->
+          <div class="wavy-clock-pod">
+            <div class="wavy-rosette-disc">
+              <div class="wavy-clock-hands" id="wavy-clock-hands">
+                <div class="wavy-hand-hour"></div>
+                <div class="wavy-hand-minute"></div>
+                <div class="wavy-hand-pivot"></div>
+              </div>
+            </div>
+            <div class="hub-timer-clock" id="hub-clock-display">25:00</div>
+          </div>
+
           <div class="hub-timer-phase" id="hub-phase-label">Ready to Focus</div>
 
           <div class="hub-controls-row">
@@ -167,7 +187,7 @@
       <div class="evolution-layout">
         <!-- Left: Companion Showcase Box -->
         <div class="card companion-showcase-box">
-          <div class="companion-avatar-stage" id="showcase-avatar-container">
+          <div class="companion-avatar-stage wavy-avatar-pod" id="showcase-avatar-container">
             <!-- Dynamic SVG companion -->
           </div>
           <h2 style="font-size: 20px; font-weight: 800;" id="showcase-name">Ignis</h2>

@@ -151,27 +151,43 @@ document.addEventListener('DOMContentLoaded', async () => {
     const remaining = getCalculatedRemaining();
     hubClockDisplay.textContent = formatTime(remaining);
 
+    // Update angled clock hands rotation inside wavy rosette
+    const { timer } = appData;
+    const totalSecs = timer.mode === 'ultra' ? 3000 : (timer.mode === 'focus' ? 2700 : 1500);
+    const progress = Math.max(0, Math.min(1, (totalSecs - remaining) / totalSecs));
+
+    const hourHand = document.querySelector('.wavy-hand-hour');
+    const minHand = document.querySelector('.wavy-hand-minute');
+    if (hourHand) {
+      const hAngle = 45 + progress * 90;
+      hourHand.style.transform = `translateY(-26px) rotate(${hAngle}deg)`;
+    }
+    if (minHand) {
+      const mAngle = 125 + progress * 360;
+      minHand.style.transform = `translateY(-37px) rotate(${mAngle}deg)`;
+    }
+
     const { state } = appData.timer;
     if (state === 'FOCUS') {
       hubPhaseLabel.textContent = '🔥 Study Session in Progress';
-      hubPhaseLabel.style.color = '#de5b1b';
-      hubPhaseLabel.style.borderColor = '#de5b1b';
-      hubPhaseLabel.style.background = 'rgba(222, 91, 27, 0.12)';
+      hubPhaseLabel.style.color = '#cc4d44';
+      hubPhaseLabel.style.borderColor = 'rgba(204, 77, 68, 0.3)';
+      hubPhaseLabel.style.background = 'rgba(204, 77, 68, 0.12)';
     } else if (state === 'BREAK') {
       hubPhaseLabel.textContent = '☕ Micro-Break Active (60s Brain Reset)';
       hubPhaseLabel.style.color = '#15803d';
-      hubPhaseLabel.style.borderColor = '#15803d';
+      hubPhaseLabel.style.borderColor = 'rgba(21, 128, 61, 0.3)';
       hubPhaseLabel.style.background = 'rgba(21, 128, 61, 0.12)';
     } else if (state === 'PAUSED') {
       hubPhaseLabel.textContent = '⏸ Study Session Paused';
       hubPhaseLabel.style.color = '#b45309';
-      hubPhaseLabel.style.borderColor = '#b45309';
+      hubPhaseLabel.style.borderColor = 'rgba(180, 83, 9, 0.3)';
       hubPhaseLabel.style.background = 'rgba(180, 83, 9, 0.12)';
     } else {
       hubPhaseLabel.textContent = 'Ready to Focus';
-      hubPhaseLabel.style.color = '#5c544c';
-      hubPhaseLabel.style.borderColor = '#5c544c';
-      hubPhaseLabel.style.background = 'rgba(92, 84, 76, 0.10)';
+      hubPhaseLabel.style.color = '#726760';
+      hubPhaseLabel.style.borderColor = 'rgba(114, 103, 96, 0.2)';
+      hubPhaseLabel.style.background = 'rgba(114, 103, 96, 0.08)';
     }
   }
 
