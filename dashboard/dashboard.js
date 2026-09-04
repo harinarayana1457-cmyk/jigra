@@ -383,7 +383,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <p class="stage-desc">${st.desc}</p>
           </div>
           <div>
-            ${isUnlocked ? '<span style="font-size: 11px; font-weight: 900; background: #eaf5ec; color: #15803d; border: 1.5px solid #15803d; padding: 4px 10px; border-radius: 6px;">Unlocked ✓</span>' : `<span style="font-size: 12px; font-weight: 800; color: #71675c;">Requires Lv. ${st.minLevel}</span>`}
+            ${isUnlocked ? '<span style="font-size: 11px; font-weight: 900; background: #eaf5ec; color: #15803d; border: 1.5px solid #15803d; padding: 4px 10px; border-radius: 6px;">Unlocked ✓</span>' : `<span style="font-size: 12px; font-weight: 900; color: #111111; background: rgba(255, 255, 255, 0.45); padding: 4px 12px; border-radius: 9999px; border: 1px solid rgba(255, 255, 255, 0.6);">Requires Lv. ${st.minLevel}</span>`}
           </div>
         </div>
       `;
