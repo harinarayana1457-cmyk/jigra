@@ -13,34 +13,68 @@
   let companionData = { skin: 'ember', hat: 'none', aura: 'none', level: 1 };
   let holdInterval = null;
   let holdProgress = 0;
+  let spaPollIntervalId = null;
+
+  function isContextValid() {
+    try {
+      return Boolean(typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id);
+    } catch (e) {
+      return false;
+    }
+  }
+
+  async function safeSendMessage(message) {
+    if (!isContextValid()) return null;
+    try {
+      return await chrome.runtime.sendMessage(message);
+    } catch (err) {
+      return null;
+    }
+  }
 
   // Initialize Shield
   async function initShield() {
+    if (!isContextValid()) return;
     if (typeof JigraStorage === 'undefined') {
       setTimeout(initShield, 100);
       return;
     }
 
-    const data = await JigraStorage.get();
-    applyState(data);
+    try {
+      const data = await JigraStorage.get();
+      if (!isContextValid() || !data) return;
+      applyState(data);
+    } catch (e) {
+      return;
+    }
 
     // Listen for storage updates
     JigraStorage.onChanged((changes) => {
+      if (!isContextValid()) return;
       if (changes.timer || changes.settings || changes.companion) {
-        JigraStorage.get().then(applyState);
+        JigraStorage.get().then((store) => {
+          if (isContextValid() && store) {
+            applyState(store);
+          }
+        }).catch(() => {});
       }
     });
 
     // Listen for runtime messages
-    chrome.runtime.onMessage.addListener((message) => {
-      if (message.type === 'STATE_CHANGED' && message.payload?.timer) {
-        currentTimerState = message.payload.timer.state;
-        currentTimerMode = message.payload.timer.mode;
-        targetTimestamp = message.payload.timer.targetTimestamp;
-        remainingSeconds = message.payload.timer.remainingSeconds;
-        evaluateShield();
+    try {
+      if (chrome?.runtime?.onMessage) {
+        chrome.runtime.onMessage.addListener((message) => {
+          if (!isContextValid()) return;
+          if (message.type === 'STATE_CHANGED' && message.payload?.timer) {
+            currentTimerState = message.payload.timer.state;
+            currentTimerMode = message.payload.timer.mode;
+            targetTimestamp = message.payload.timer.targetTimestamp;
+            remainingSeconds = message.payload.timer.remainingSeconds;
+            evaluateShield();
+          }
+        });
       }
-    });
+    } catch (e) {}
 
     // Hook YouTube SPA navigation events
     window.addEventListener('yt-navigate-finish', handleNavigation);
@@ -49,7 +83,14 @@
 
     // Polling fallback for SPA URL changes
     let lastUrl = location.href;
-    setInterval(() => {
+    spaPollIntervalId = setInterval(() => {
+      if (!isContextValid()) {
+        if (spaPollIntervalId) {
+          clearInterval(spaPollIntervalId);
+          spaPollIntervalId = null;
+        }
+        return;
+      }
       if (location.href !== lastUrl) {
         lastUrl = location.href;
         handleNavigation();
@@ -228,7 +269,7 @@
           if (holdProgress >= 100) {
             clearInterval(holdInterval);
             removeShortsBlocker();
-            chrome.runtime.sendMessage({ type: 'PAUSE_TIMER' });
+            safeSendMessage({ type: 'PAUSE_TIMER' });
             alert('Emergency override granted. Focus session paused.');
           }
         }, 100);
@@ -252,7 +293,7 @@
       overrideBtn?.addEventListener('touchend', cancelHold);
     } else {
       document.getElementById('jigra-gentle-exit-btn')?.addEventListener('click', () => {
-        chrome.runtime.sendMessage({ type: 'PAUSE_TIMER' });
+        safeSendMessage({ type: 'PAUSE_TIMER' });
         removeShortsBlocker();
       });
     }
@@ -286,7 +327,7 @@
     `;
 
     badge.addEventListener('click', () => {
-      chrome.runtime.sendMessage({ type: 'OPEN_DASHBOARD' });
+      safeSendMessage({ type: 'OPEN_DASHBOARD' });
     });
 
     target.prepend(badge);

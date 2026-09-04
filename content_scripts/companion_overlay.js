@@ -25,6 +25,24 @@
   let pauseSecondsElapsed = 0;
   let pauseReminderIndex = 0;
   let initialPauseTimeout = null;
+  let tickIntervalId = null;
+
+  function isContextValid() {
+    try {
+      return Boolean(typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id);
+    } catch (e) {
+      return false;
+    }
+  }
+
+  async function safeSendMessage(message) {
+    if (!isContextValid()) return null;
+    try {
+      return await chrome.runtime.sendMessage(message);
+    } catch (err) {
+      return null;
+    }
+  }
 
   // Drag state
   let isDragging = false;
@@ -35,6 +53,7 @@
   let hasMoved = false;
 
   async function initCompanion() {
+    if (!isContextValid()) return;
     // Wait for dependencies if necessary
     if (typeof JigraStorage === 'undefined' || typeof JigraRenderer === 'undefined') {
       setTimeout(initCompanion, 80);
@@ -50,15 +69,24 @@
     // Load styles
     const styleLink = document.createElement('link');
     styleLink.rel = 'stylesheet';
-    styleLink.href = chrome.runtime.getURL('content_scripts/companion_overlay.css');
+    try {
+      styleLink.href = chrome.runtime.getURL('content_scripts/companion_overlay.css');
+    } catch (e) {
+      return;
+    }
     shadowRoot.appendChild(styleLink);
 
     // Initial data fetch
-    const store = await JigraStorage.get();
-    companionData = store.companion;
-    economyData = store.economy;
-    timerData = store.timer;
-    settingsData = store.settings || settingsData;
+    try {
+      const store = await JigraStorage.get();
+      if (!isContextValid()) return;
+      companionData = store.companion;
+      economyData = store.economy;
+      timerData = store.timer;
+      settingsData = store.settings || settingsData;
+    } catch (e) {
+      return;
+    }
 
     updateCurrentStateFromTimer();
     renderCompanionUI();
@@ -66,7 +94,7 @@
     setupListeners();
 
     // Start 1s countdown tick
-    setInterval(tickTimer, 1000);
+    tickIntervalId = setInterval(tickTimer, 1000);
   }
 
   function updateCurrentStateFromTimer() {
@@ -151,7 +179,8 @@
       text: messageText,
       actionText: '▶ Resume Session',
       onAction: async () => {
-        await chrome.runtime.sendMessage({ type: 'RESUME_TIMER' });
+        if (!isContextValid()) return;
+        await safeSendMessage({ type: 'RESUME_TIMER' });
         showSpeechBubble({
           title: '🚀 Back in the Zone!',
           text: `Focus sprint resumed! Crushing the next ${formatted}!`,
@@ -176,6 +205,7 @@
   }
 
   function renderCompanionUI() {
+    if (!isContextValid()) return;
     let container = shadowRoot.getElementById('jigra-root');
     if (!container) {
       container = document.createElement('div');
@@ -283,8 +313,9 @@
     // Pill click: resume if paused, otherwise toggle HUD
     shadowRoot.getElementById('jigra-pill')?.addEventListener('click', async (e) => {
       e.stopPropagation();
+      if (!isContextValid()) return;
       if (timerData.state === 'PAUSED') {
-        await chrome.runtime.sendMessage({ type: 'RESUME_TIMER' });
+        await safeSendMessage({ type: 'RESUME_TIMER' });
         showSpeechBubble({
           title: '🚀 Resumed',
           text: 'Focus session resumed! Keep that momentum going!',
@@ -297,18 +328,20 @@
 
     shadowRoot.getElementById('jigra-hud-bazaar-btn')?.addEventListener('click', (e) => {
       e.stopPropagation();
-      chrome.runtime.sendMessage({ type: 'OPEN_DASHBOARD', payload: { tab: 'bazaar' } });
+      if (!isContextValid()) return;
+      safeSendMessage({ type: 'OPEN_DASHBOARD', payload: { tab: 'bazaar' } });
       toggleHUD(false);
     });
 
-    shadowRoot.getElementById('jigra-hud-timer-btn')?.addEventListener('click', (e) => {
+    shadowRoot.getElementById('jigra-hud-timer-btn')?.addEventListener('click', async (e) => {
       e.stopPropagation();
+      if (!isContextValid()) return;
       if (timerData.state === 'FOCUS') {
-        chrome.runtime.sendMessage({ type: 'PAUSE_TIMER' });
+        await safeSendMessage({ type: 'PAUSE_TIMER' });
       } else if (timerData.state === 'PAUSED') {
-        chrome.runtime.sendMessage({ type: 'RESUME_TIMER' });
+        await safeSendMessage({ type: 'RESUME_TIMER' });
       } else {
-        chrome.runtime.sendMessage({ type: 'START_TIMER', payload: { mode: timerData.mode } });
+        await safeSendMessage({ type: 'START_TIMER', payload: { mode: timerData.mode } });
       }
       toggleHUD(false);
     });
@@ -316,6 +349,7 @@
     // Play Game Button
     shadowRoot.getElementById('jigra-hud-game-btn')?.addEventListener('click', async (e) => {
       e.stopPropagation();
+      if (!isContextValid()) return;
       if (!gameAccess.allowed) {
         if (typeof JigraAudio !== 'undefined') JigraAudio.playWarning();
         showSpeechBubble(`🔒 ${gameAccess.reason} (Tip: Select 'Anytime' above for Free Play!)`, 5000);
@@ -328,7 +362,7 @@
       let wasInActiveSession = false;
       if (timerData.state === 'FOCUS') {
         wasInActiveSession = true;
-        await chrome.runtime.sendMessage({ type: 'PAUSE_TIMER' });
+        await safeSendMessage({ type: 'PAUSE_TIMER' });
       }
 
       openInPageMiniGame(currentInPageGameType, wasInActiveSession);
@@ -337,10 +371,12 @@
     // Interval Selector dropdown change
     shadowRoot.getElementById('jigra-hud-interval-select')?.addEventListener('change', async (e) => {
       e.stopPropagation();
+      if (!isContextValid()) return;
       const newMode = e.target.value;
       await JigraStorage.updateGameIntervalMode(newMode);
       if (typeof JigraAudio !== 'undefined') JigraAudio.playClick();
       const updated = await JigraStorage.get();
+      if (!isContextValid()) return;
       settingsData = updated.settings;
       renderCompanionUI();
       toggleHUD(true);
@@ -382,6 +418,7 @@
     const arena = modal.querySelector('#jigra-inpage-arena');
 
     const onGameFinished = async () => {
+      if (!isContextValid()) return;
       await JigraStorage.recordGamePlayed();
       if (typeof JigraAudio !== 'undefined') JigraAudio.playVictoryJingle();
       if (typeof JigraConfetti !== 'undefined') {
@@ -391,7 +428,8 @@
       // Close modal after brief pause and resume or start next focus sprint
       setTimeout(async () => {
         closeInPageMiniGame();
-        const response = await chrome.runtime.sendMessage({ type: 'RESUME_OR_START_NEXT_SPRINT' });
+        if (!isContextValid()) return;
+        const response = await safeSendMessage({ type: 'RESUME_OR_START_NEXT_SPRINT' });
         if (response?.resumed) {
           const rem = response.remainingSeconds || getRemainingSeconds();
           showSpeechBubble(`⚡ Focus session resumed from ${formatTime(rem)}! Keep going.`, 4500);
@@ -418,7 +456,8 @@
     modal.querySelector('#jigra-modal-close')?.addEventListener('click', async () => {
       closeInPageMiniGame();
       if (wasInActiveSession || timerData.state === 'PAUSED') {
-        await chrome.runtime.sendMessage({ type: 'RESUME_TIMER' });
+        if (!isContextValid()) return;
+        await safeSendMessage({ type: 'RESUME_TIMER' });
         showSpeechBubble('⚡ Session resumed!', 3000);
       }
     });
@@ -577,6 +616,14 @@
   }
 
   function tickTimer() {
+    if (!isContextValid()) {
+      if (tickIntervalId) {
+        clearInterval(tickIntervalId);
+        tickIntervalId = null;
+      }
+      return;
+    }
+
     const remaining = getRemainingSeconds();
     const formatted = formatTime(remaining);
 
@@ -602,9 +649,13 @@
   }
 
   function setupListeners() {
+    if (!isContextValid()) return;
+
     // Listen for storage changes
     JigraStorage.onChanged(async (changes) => {
+      if (!isContextValid()) return;
       const store = await JigraStorage.get();
+      if (!isContextValid() || !store) return;
       companionData = store.companion;
       economyData = store.economy;
       timerData = store.timer;
@@ -615,53 +666,61 @@
     });
 
     // Listen for runtime broadcasts
-    chrome.runtime.onMessage.addListener((message) => {
-      const { type, payload } = message;
+    try {
+      if (chrome?.runtime?.onMessage) {
+        chrome.runtime.onMessage.addListener((message) => {
+          if (!isContextValid()) return;
+          const { type, payload } = message;
 
-      if (type === 'STATE_CHANGED' && payload?.timer) {
-        timerData = payload.timer;
-        updateCurrentStateFromTimer();
-        renderCompanionUI();
-      } else if (type === 'PAUSE_REMINDER_NUDGE') {
-        // Nudge from service worker or tab broadcast
-        if (timerData.state === 'PAUSED' && !activeInPageGame) {
-          triggerPauseReminder(false);
-        }
-      } else if (type === 'DISTRACTION_ALERT') {
-        // Distraction detected!
-        currentState = 'distracted';
-        renderCompanionUI();
-        showSpeechBubble(payload?.reason || 'Tap tap! Back to work! 🚨', 5000);
+          if (type === 'STATE_CHANGED' && payload?.timer) {
+            timerData = payload.timer;
+            updateCurrentStateFromTimer();
+            renderCompanionUI();
+          } else if (type === 'PAUSE_REMINDER_NUDGE') {
+            // Nudge from service worker or tab broadcast
+            if (timerData.state === 'PAUSED' && !activeInPageGame) {
+              triggerPauseReminder(false);
+            }
+          } else if (type === 'DISTRACTION_ALERT') {
+            // Distraction detected!
+            currentState = 'distracted';
+            renderCompanionUI();
+            showSpeechBubble(payload?.reason || 'Tap tap! Back to work! 🚨', 5000);
 
-        if (typeof JigraAudio !== 'undefined') {
-          JigraAudio.playTapGlass();
-        }
+            if (typeof JigraAudio !== 'undefined') {
+              JigraAudio.playTapGlass();
+            }
 
-        setTimeout(() => {
-          updateCurrentStateFromTimer();
-          renderCompanionUI();
-        }, 5000);
-      } else if (type === 'TIMER_COMPLETED') {
-        // Victory celebration!
-        currentState = 'celebrating';
-        renderCompanionUI();
-        showSpeechBubble(`🎉 Session Complete! +${payload.sparksEarned} Sparks! Click 'Play' for your 60s micro-break! 🎮`, 7000);
+            setTimeout(() => {
+              if (!isContextValid()) return;
+              updateCurrentStateFromTimer();
+              renderCompanionUI();
+            }, 5000);
+          } else if (type === 'TIMER_COMPLETED') {
+            // Victory celebration!
+            currentState = 'celebrating';
+            renderCompanionUI();
+            showSpeechBubble(`🎉 Session Complete! +${payload.sparksEarned} Sparks! Click 'Play' for your 60s micro-break! 🎮`, 7000);
 
-        // Sound fanfare
-        if (typeof JigraAudio !== 'undefined') {
-          JigraAudio.playVictoryJingle();
-        }
+            // Sound fanfare
+            if (typeof JigraAudio !== 'undefined') {
+              JigraAudio.playVictoryJingle();
+            }
 
-        // Confetti burst from companion origin
-        if (typeof JigraConfetti !== 'undefined') {
-          JigraConfetti.launch({
-            x: currentPosX + 44,
-            y: currentPosY + 44,
-            count: 90
-          });
-        }
+            // Confetti burst from companion origin
+            if (typeof JigraConfetti !== 'undefined') {
+              JigraConfetti.launch({
+                x: currentPosX + 44,
+                y: currentPosY + 44,
+                count: 90
+              });
+            }
+          }
+        });
       }
-    });
+    } catch (e) {
+      // Extension context invalidated
+    }
 
     // Keep companion on screen on window resize
     window.addEventListener('resize', () => {
