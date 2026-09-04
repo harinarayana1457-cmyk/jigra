@@ -1,10 +1,10 @@
 /* Jigra Dashboard Styles - Modern Glassmorphism & Cyberpunk Neon Aesthetic */
 :root {
   --bg-dark: #090d16;
-  --bg-card: rgba(22, 30, 49, 0.7);
-  --bg-card-hover: rgba(30, 41, 68, 0.85);
-  --border-glass: rgba(255, 255, 255, 0.08);
-  --border-focus: rgba(249, 115, 22, 0.4);
+  --bg-card: rgba(17, 24, 39, 0.76);
+  --bg-card-hover: rgba(26, 36, 60, 0.88);
+  --border-glass: rgba(255, 255, 255, 0.1);
+  --border-focus: rgba(249, 115, 22, 0.5);
   --primary-orange: #f97316;
   --primary-glow: rgba(249, 115, 22, 0.35);
   --secondary-cyan: #06b6d4;
@@ -21,7 +21,16 @@
 }
 
 body {
-  background-color: var(--bg-dark);
+  background-color: #0b0f19;
+  background-image:
+    radial-gradient(ellipse at 85% 15%, rgba(249, 115, 22, 0.14) 0%, transparent 45%),
+    radial-gradient(ellipse at 15% 85%, rgba(6, 182, 212, 0.12) 0%, transparent 45%),
+    linear-gradient(180deg, rgba(10, 15, 26, 0.74) 0%, rgba(9, 13, 22, 0.84) 100%),
+    url('assets/background.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   color: var(--text-main);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   min-height: 100vh;
@@ -32,7 +41,9 @@ body {
 /* Sidebar Navigation */
 .sidebar {
   width: 260px;
-  background: rgba(15, 23, 42, 0.95);
+  background: rgba(10, 16, 30, 0.82);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   border-right: 1px solid var(--border-glass);
   padding: 24px 20px;
   display: flex;
@@ -41,6 +52,7 @@ body {
   height: 100vh;
   position: sticky;
   top: 0;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.35);
 }
 
 .brand-section {
@@ -200,11 +212,12 @@ body {
 
 .card {
   background: var(--bg-card);
-  backdrop-filter: blur(16px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--border-glass);
   border-radius: 20px;
   padding: 28px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
 }
 
 /* Hub Timer Card */
@@ -317,12 +330,21 @@ body {
 }
 
 .stat-metric-card {
-  background: rgba(15, 23, 42, 0.6);
+  background: rgba(17, 24, 39, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border-glass);
   border-radius: 16px;
   padding: 20px;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.stat-metric-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(249, 115, 22, 0.35);
 }
 
 .metric-header {
@@ -371,11 +393,14 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(15, 23, 42, 0.6);
+  background: rgba(15, 23, 42, 0.68);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border: 1px solid var(--border-glass);
   border-radius: 12px;
   padding: 12px 18px;
   font-size: 13px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 /* Bazaar / Shop Layout */
@@ -411,17 +436,21 @@ body {
 
 .bazaar-item-card {
   background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border-glass);
   border-radius: 18px;
   padding: 20px;
   display: flex;
   flex-direction: column;
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .bazaar-item-card:hover {
   transform: translateY(-3px);
-  border-color: rgba(249, 115, 22, 0.35);
+  border-color: rgba(249, 115, 22, 0.4);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.35);
 }
 
 .item-badge-row {
@@ -572,6 +601,8 @@ body {
 
 .stage-card {
   background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border-glass);
   border-radius: 16px;
   padding: 20px;
@@ -579,6 +610,7 @@ body {
   align-items: center;
   gap: 20px;
   transition: all 0.2s;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
 }
 
 .stage-card.unlocked {
@@ -661,7 +693,9 @@ body {
 }
 
 .game-arena {
-  background: rgba(15, 23, 42, 0.8);
+  background: rgba(15, 23, 42, 0.76);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--border-glass);
   border-radius: 24px;
   padding: 32px;
@@ -671,6 +705,7 @@ body {
   align-items: center;
   justify-content: center;
   position: relative;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
 }
 
 /* Common Game Wrapper Styles */

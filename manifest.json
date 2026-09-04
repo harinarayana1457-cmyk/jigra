@@ -63,7 +63,8 @@
     {
       "resources": [
         "content_scripts/companion_overlay.css",
-        "icons/*"
+        "icons/*",
+        "dashboard/assets/*"
       ],
       "matches": ["<all_urls>"]
     }
