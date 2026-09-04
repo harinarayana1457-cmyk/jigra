@@ -17,8 +17,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   const tabPanes = document.querySelectorAll('.tab-pane');
   const dashWalletSparks = document.getElementById('dash-wallet-sparks');
   const dashWalletStreak = document.getElementById('dash-wallet-streak');
-  const themeToggleBtn = document.getElementById('theme-toggle-btn');
-  const themeToggleText = document.getElementById('theme-toggle-text');
 
   // Focus Hub elements
   const hubClockDisplay = document.getElementById('hub-clock-display');
@@ -56,7 +54,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Initialize
   async function initDashboard() {
-    initTheme();
+    try {
+      localStorage.removeItem('jigra_theme');
+      document.documentElement.removeAttribute('data-theme');
+    } catch (e) {}
     appData = await JigraStorage.get();
 
     // Check URL hash for tab navigation (e.g. #bazaar, #evolution)
@@ -115,23 +116,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (tabId === 'arcade' && !currentGameInstance) {
       launchMiniGame(activeGame);
     }
-  }
-
-  /* ------------------- THEME (LIGHT / DARK) ------------------- */
-  function initTheme() {
-    const saved = localStorage.getItem('jigra_theme') || 'light';
-    applyTheme(saved);
-  }
-
-  function applyTheme(theme) {
-    if (theme === 'dark') {
-      document.documentElement.setAttribute('data-theme', 'dark');
-      if (themeToggleText) themeToggleText.textContent = 'Dark Mode';
-    } else {
-      document.documentElement.removeAttribute('data-theme');
-      if (themeToggleText) themeToggleText.textContent = 'Light Mode';
-    }
-    localStorage.setItem('jigra_theme', theme);
   }
 
   /* ------------------- WALLET & METRICS ------------------- */
@@ -459,14 +443,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   /* ------------------- EVENT LISTENERS ------------------- */
   function setupEventListeners() {
-    // Theme Toggle (Light / Dark Mode)
-    themeToggleBtn?.addEventListener('click', () => {
-      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      const nextTheme = isDark ? 'light' : 'dark';
-      applyTheme(nextTheme);
-      if (typeof JigraAudio !== 'undefined') JigraAudio.playClick();
-    });
-
     // Navigation
     navItems.forEach((item) => {
       item.addEventListener('click', () => {
