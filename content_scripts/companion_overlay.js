@@ -27,19 +27,63 @@
   let initialPauseTimeout = null;
   let tickIntervalId = null;
 
+  function cleanupOrphanedScript() {
+    if (tickIntervalId) {
+      clearInterval(tickIntervalId);
+      tickIntervalId = null;
+    }
+    if (initialPauseTimeout) {
+      clearTimeout(initialPauseTimeout);
+      initialPauseTimeout = null;
+    }
+    if (speechTimeout) {
+      clearTimeout(speechTimeout);
+      speechTimeout = null;
+    }
+    pauseMonitoringActive = false;
+  }
+
   function isContextValid() {
     try {
-      return Boolean(typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id);
+      if (typeof chrome === 'undefined' || !chrome?.runtime || !chrome.runtime.id) {
+        cleanupOrphanedScript();
+        return false;
+      }
+      return true;
     } catch (e) {
+      cleanupOrphanedScript();
       return false;
     }
   }
+
+  // Intercept and cleanly handle context invalidation errors in orphaned scripts
+  window.addEventListener('error', (event) => {
+    const msg = event?.message || event?.error?.message || '';
+    if (typeof msg === 'string' && msg.includes('Extension context invalidated')) {
+      cleanupOrphanedScript();
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      return true;
+    }
+  }, true);
+
+  window.addEventListener('unhandledrejection', (event) => {
+    const msg = event?.reason?.message || String(event?.reason || '');
+    if (typeof msg === 'string' && msg.includes('Extension context invalidated')) {
+      cleanupOrphanedScript();
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    }
+  }, true);
 
   async function safeSendMessage(message) {
     if (!isContextValid()) return null;
     try {
       return await chrome.runtime.sendMessage(message);
     } catch (err) {
+      if (err?.message?.includes('Extension context invalidated')) {
+        cleanupOrphanedScript();
+      }
       return null;
     }
   }
@@ -192,10 +236,15 @@
   }
 
   function getRemainingSeconds() {
-    if (timerData.targetTimestamp && (timerData.state === 'FOCUS' || timerData.state === 'BREAK')) {
-      return Math.max(0, Math.ceil((timerData.targetTimestamp - Date.now()) / 1000));
+    try {
+      if (!timerData) return 0;
+      if (timerData.targetTimestamp && (timerData.state === 'FOCUS' || timerData.state === 'BREAK')) {
+        return Math.max(0, Math.ceil((timerData.targetTimestamp - Date.now()) / 1000));
+      }
+      return timerData.remainingSeconds || 0;
+    } catch (e) {
+      return 0;
     }
-    return timerData.remainingSeconds || 0;
   }
 
   function formatTime(secs) {
@@ -617,33 +666,36 @@
 
   function tickTimer() {
     if (!isContextValid()) {
-      if (tickIntervalId) {
-        clearInterval(tickIntervalId);
-        tickIntervalId = null;
-      }
+      cleanupOrphanedScript();
       return;
     }
 
-    const remaining = getRemainingSeconds();
-    const formatted = formatTime(remaining);
+    try {
+      const remaining = getRemainingSeconds();
+      const formatted = formatTime(remaining);
 
-    const timeSpan = shadowRoot?.getElementById('jigra-pill-time');
-    if (timeSpan) {
-      if (timerData.state === 'PAUSED') {
-        timeSpan.textContent = `⏸️ ${formatted}`;
-      } else {
-        timeSpan.textContent = formatted;
-      }
-    }
-
-    // While paused, track elapsed pause time and trigger periodic reminders
-    if (timerData.state === 'PAUSED' && pauseMonitoringActive) {
-      pauseSecondsElapsed++;
-      // Every 35 seconds of paused state, trigger a friendly reminder if no game is running
-      if (pauseSecondsElapsed > 0 && pauseSecondsElapsed % 35 === 0) {
-        if (!activeInPageGame) {
-          triggerPauseReminder(false);
+      const timeSpan = shadowRoot?.getElementById('jigra-pill-time');
+      if (timeSpan) {
+        if (timerData.state === 'PAUSED') {
+          timeSpan.textContent = `⏸️ ${formatted}`;
+        } else {
+          timeSpan.textContent = formatted;
         }
+      }
+
+      // While paused, track elapsed pause time and trigger periodic reminders
+      if (timerData.state === 'PAUSED' && pauseMonitoringActive) {
+        pauseSecondsElapsed++;
+        // Every 35 seconds of paused state, trigger a friendly reminder if no game is running
+        if (pauseSecondsElapsed > 0 && pauseSecondsElapsed % 35 === 0) {
+          if (!activeInPageGame) {
+            triggerPauseReminder(false);
+          }
+        }
+      }
+    } catch (e) {
+      if (e?.message?.includes('Extension context invalidated')) {
+        cleanupOrphanedScript();
       }
     }
   }
@@ -652,68 +704,82 @@
     if (!isContextValid()) return;
 
     // Listen for storage changes
-    JigraStorage.onChanged(async (changes) => {
-      if (!isContextValid()) return;
-      const store = await JigraStorage.get();
-      if (!isContextValid() || !store) return;
-      companionData = store.companion;
-      economyData = store.economy;
-      timerData = store.timer;
-      settingsData = store.settings || settingsData;
+    try {
+      JigraStorage.onChanged(async (changes) => {
+        if (!isContextValid()) return;
+        try {
+          const store = await JigraStorage.get();
+          if (!isContextValid() || !store) return;
+          companionData = store.companion;
+          economyData = store.economy;
+          timerData = store.timer;
+          settingsData = store.settings || settingsData;
 
-      updateCurrentStateFromTimer();
-      renderCompanionUI();
-    });
+          updateCurrentStateFromTimer();
+          renderCompanionUI();
+        } catch (e) {
+          if (e?.message?.includes('Extension context invalidated')) {
+            cleanupOrphanedScript();
+          }
+        }
+      });
+    } catch (e) {}
 
     // Listen for runtime broadcasts
     try {
-      if (chrome?.runtime?.onMessage) {
+      if (typeof chrome !== 'undefined' && chrome?.runtime && chrome.runtime.onMessage) {
         chrome.runtime.onMessage.addListener((message) => {
           if (!isContextValid()) return;
-          const { type, payload } = message;
+          try {
+            const { type, payload } = message;
 
-          if (type === 'STATE_CHANGED' && payload?.timer) {
-            timerData = payload.timer;
-            updateCurrentStateFromTimer();
-            renderCompanionUI();
-          } else if (type === 'PAUSE_REMINDER_NUDGE') {
-            // Nudge from service worker or tab broadcast
-            if (timerData.state === 'PAUSED' && !activeInPageGame) {
-              triggerPauseReminder(false);
-            }
-          } else if (type === 'DISTRACTION_ALERT') {
-            // Distraction detected!
-            currentState = 'distracted';
-            renderCompanionUI();
-            showSpeechBubble(payload?.reason || 'Tap tap! Back to work! 🚨', 5000);
-
-            if (typeof JigraAudio !== 'undefined') {
-              JigraAudio.playTapGlass();
-            }
-
-            setTimeout(() => {
-              if (!isContextValid()) return;
+            if (type === 'STATE_CHANGED' && payload?.timer) {
+              timerData = payload.timer;
               updateCurrentStateFromTimer();
               renderCompanionUI();
-            }, 5000);
-          } else if (type === 'TIMER_COMPLETED') {
-            // Victory celebration!
-            currentState = 'celebrating';
-            renderCompanionUI();
-            showSpeechBubble(`🎉 Session Complete! +${payload.sparksEarned} Sparks! Click 'Play' for your 60s micro-break! 🎮`, 7000);
+            } else if (type === 'PAUSE_REMINDER_NUDGE') {
+              // Nudge from service worker or tab broadcast
+              if (timerData.state === 'PAUSED' && !activeInPageGame) {
+                triggerPauseReminder(false);
+              }
+            } else if (type === 'DISTRACTION_ALERT') {
+              // Distraction detected!
+              currentState = 'distracted';
+              renderCompanionUI();
+              showSpeechBubble(payload?.reason || 'Tap tap! Back to work! 🚨', 5000);
 
-            // Sound fanfare
-            if (typeof JigraAudio !== 'undefined') {
-              JigraAudio.playVictoryJingle();
+              if (typeof JigraAudio !== 'undefined') {
+                JigraAudio.playTapGlass();
+              }
+
+              setTimeout(() => {
+                if (!isContextValid()) return;
+                updateCurrentStateFromTimer();
+                renderCompanionUI();
+              }, 5000);
+            } else if (type === 'TIMER_COMPLETED') {
+              // Victory celebration!
+              currentState = 'celebrating';
+              renderCompanionUI();
+              showSpeechBubble(`🎉 Session Complete! +${payload.sparksEarned} Sparks! Click 'Play' for your 60s micro-break! 🎮`, 7000);
+
+              // Sound fanfare
+              if (typeof JigraAudio !== 'undefined') {
+                JigraAudio.playVictoryJingle();
+              }
+
+              // Confetti burst from companion origin
+              if (typeof JigraConfetti !== 'undefined') {
+                JigraConfetti.launch({
+                  x: currentPosX + 44,
+                  y: currentPosY + 44,
+                  count: 90
+                });
+              }
             }
-
-            // Confetti burst from companion origin
-            if (typeof JigraConfetti !== 'undefined') {
-              JigraConfetti.launch({
-                x: currentPosX + 44,
-                y: currentPosY + 44,
-                count: 90
-              });
+          } catch (e) {
+            if (e?.message?.includes('Extension context invalidated')) {
+              cleanupOrphanedScript();
             }
           }
         });
@@ -724,6 +790,7 @@
 
     // Keep companion on screen on window resize
     window.addEventListener('resize', () => {
+      if (!isContextValid()) return;
       currentPosX = Math.min(currentPosX, window.innerWidth - 104);
       currentPosY = Math.min(currentPosY, window.innerHeight - 120);
       updatePositionStyles();

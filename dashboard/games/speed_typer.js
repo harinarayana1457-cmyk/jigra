@@ -174,10 +174,14 @@
       if (input) input.disabled = true;
 
       // Award bonus sparks
-      chrome.runtime.sendMessage({
-        type: 'AWARD_MINI_GAME_SPARKS',
-        payload: { sparks: 5 }
-      });
+      try {
+        if (typeof chrome !== 'undefined' && chrome?.runtime?.id) {
+          chrome.runtime.sendMessage({
+            type: 'AWARD_MINI_GAME_SPARKS',
+            payload: { sparks: 5 }
+          }).catch(() => {});
+        }
+      } catch (e) {}
 
       const elapsedMins = Math.max(0.1, (Date.now() - (this.startTime || Date.now())) / 60000);
       const finalWpm = Math.round(this.correctChars / 5 / elapsedMins);

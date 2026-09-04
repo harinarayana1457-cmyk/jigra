@@ -15,19 +15,58 @@
   let holdProgress = 0;
   let spaPollIntervalId = null;
 
+  function cleanupShield() {
+    if (spaPollIntervalId) {
+      clearInterval(spaPollIntervalId);
+      spaPollIntervalId = null;
+    }
+    if (holdInterval) {
+      clearInterval(holdInterval);
+      holdInterval = null;
+    }
+  }
+
   function isContextValid() {
     try {
-      return Boolean(typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id);
+      if (typeof chrome === 'undefined' || !chrome?.runtime || !chrome.runtime.id) {
+        cleanupShield();
+        return false;
+      }
+      return true;
     } catch (e) {
+      cleanupShield();
       return false;
     }
   }
+
+  // Intercept and cleanly handle context invalidation errors in orphaned scripts
+  window.addEventListener('error', (event) => {
+    const msg = event?.message || event?.error?.message || '';
+    if (typeof msg === 'string' && msg.includes('Extension context invalidated')) {
+      cleanupShield();
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      return true;
+    }
+  }, true);
+
+  window.addEventListener('unhandledrejection', (event) => {
+    const msg = event?.reason?.message || String(event?.reason || '');
+    if (typeof msg === 'string' && msg.includes('Extension context invalidated')) {
+      cleanupShield();
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    }
+  }, true);
 
   async function safeSendMessage(message) {
     if (!isContextValid()) return null;
     try {
       return await chrome.runtime.sendMessage(message);
     } catch (err) {
+      if (err?.message?.includes('Extension context invalidated')) {
+        cleanupShield();
+      }
       return null;
     }
   }
@@ -82,20 +121,22 @@
     window.addEventListener('popstate', handleNavigation);
 
     // Polling fallback for SPA URL changes
-    let lastUrl = location.href;
     spaPollIntervalId = setInterval(() => {
       if (!isContextValid()) {
-        if (spaPollIntervalId) {
-          clearInterval(spaPollIntervalId);
-          spaPollIntervalId = null;
-        }
+        cleanupShield();
         return;
       }
-      if (location.href !== lastUrl) {
-        lastUrl = location.href;
-        handleNavigation();
+      try {
+        if (location.href !== lastUrl) {
+          lastUrl = location.href;
+          handleNavigation();
+        }
+        updateTimerDisplay();
+      } catch (e) {
+        if (e?.message?.includes('Extension context invalidated')) {
+          cleanupShield();
+        }
       }
-      updateTimerDisplay();
     }, 1000);
 
     handleNavigation();

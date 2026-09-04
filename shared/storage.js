@@ -119,37 +119,48 @@
 
     async get() {
       return new Promise((resolve) => {
-        if (!isExtensionContextValid() || !chrome?.storage?.local) {
-          return resolve(JSON.parse(JSON.stringify(DEFAULT_STATE)));
-        }
         try {
+          if (!isExtensionContextValid() || !chrome?.storage?.local) {
+            return resolve(JSON.parse(JSON.stringify(DEFAULT_STATE)));
+          }
           chrome.storage.local.get(null, (result) => {
-            if (!isExtensionContextValid() || chrome.runtime?.lastError) {
-              return resolve(JSON.parse(JSON.stringify(DEFAULT_STATE)));
-            }
-            if (!result || Object.keys(result).length === 0) {
-              const fresh = JSON.parse(JSON.stringify(DEFAULT_STATE));
-              try {
-                chrome.storage.local.set(fresh);
-              } catch (e) {}
-              return resolve(fresh);
-            }
-            // Merge with defaults to ensure all keys exist
-            const merged = {
-              timer: { ...DEFAULT_STATE.timer, ...(result.timer || {}) },
-              economy: { ...DEFAULT_STATE.economy, ...(result.economy || {}) },
-              companion: { ...DEFAULT_STATE.companion, ...(result.companion || {}) },
-              inventory: result.inventory || DEFAULT_STATE.inventory,
-              settings: {
-                ...DEFAULT_STATE.settings,
-                ...(result.settings || {}),
-                gameInterval: {
-                  ...DEFAULT_STATE.settings.gameInterval,
-                  ...(result.settings?.gameInterval || {})
-                }
+            try {
+              if (!isExtensionContextValid()) {
+                return resolve(JSON.parse(JSON.stringify(DEFAULT_STATE)));
               }
-            };
-            resolve(merged);
+              if (chrome.runtime?.lastError) {
+                return resolve(JSON.parse(JSON.stringify(DEFAULT_STATE)));
+              }
+              if (!result || Object.keys(result).length === 0) {
+                const fresh = JSON.parse(JSON.stringify(DEFAULT_STATE));
+                try {
+                  chrome.storage.local.set(fresh, () => {
+                    try {
+                      if (chrome.runtime?.lastError) {}
+                    } catch (e) {}
+                  });
+                } catch (e) {}
+                return resolve(fresh);
+              }
+              // Merge with defaults to ensure all keys exist
+              const merged = {
+                timer: { ...DEFAULT_STATE.timer, ...(result.timer || {}) },
+                economy: { ...DEFAULT_STATE.economy, ...(result.economy || {}) },
+                companion: { ...DEFAULT_STATE.companion, ...(result.companion || {}) },
+                inventory: result.inventory || DEFAULT_STATE.inventory,
+                settings: {
+                  ...DEFAULT_STATE.settings,
+                  ...(result.settings || {}),
+                  gameInterval: {
+                    ...DEFAULT_STATE.settings.gameInterval,
+                    ...(result.settings?.gameInterval || {})
+                  }
+                }
+              };
+              resolve(merged);
+            } catch (innerErr) {
+              resolve(JSON.parse(JSON.stringify(DEFAULT_STATE)));
+            }
           });
         } catch (err) {
           resolve(JSON.parse(JSON.stringify(DEFAULT_STATE)));
@@ -159,9 +170,16 @@
 
     async set(updates) {
       return new Promise((resolve) => {
-        if (!isExtensionContextValid() || !chrome?.storage?.local) return resolve();
         try {
-          chrome.storage.local.set(updates, () => resolve());
+          if (!isExtensionContextValid() || !chrome?.storage?.local) return resolve();
+          chrome.storage.local.set(updates, () => {
+            try {
+              if (chrome.runtime?.lastError) {}
+              resolve();
+            } catch (e) {
+              resolve();
+            }
+          });
         } catch (err) {
           resolve();
         }

@@ -198,10 +198,14 @@
       clearInterval(this.timerInterval);
 
       // Award bonus sparks
-      chrome.runtime.sendMessage({
-        type: 'AWARD_MINI_GAME_SPARKS',
-        payload: { sparks: 5 }
-      });
+      try {
+        if (typeof chrome !== 'undefined' && chrome?.runtime?.id) {
+          chrome.runtime.sendMessage({
+            type: 'AWARD_MINI_GAME_SPARKS',
+            payload: { sparks: 5 }
+          }).catch(() => {});
+        }
+      } catch (e) {}
 
       const modal = this.container.querySelector('#memory-result');
       const emoji = this.container.querySelector('#result-emoji');
