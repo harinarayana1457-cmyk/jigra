@@ -1,0 +1,762 @@
+/**
+ * Jigra Floating Screen Companion Styles
+ * Shadow DOM encapsulated styles for draggable widget, reactive emotes, and animations.
+ */
+
+:host {
+  all: initial;
+  position: fixed;
+  z-index: 2147483647;
+  user-select: none;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  box-sizing: border-box;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+.jigra-companion-root {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: grab;
+  touch-action: none;
+}
+
+.jigra-companion-root.is-dragging {
+  cursor: grabbing;
+}
+
+/* Main Companion Avatar Shell */
+.jigra-avatar-wrapper {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.35));
+}
+
+.jigra-avatar-wrapper:hover {
+  transform: scale(1.08);
+}
+
+/* State-Driven Animations */
+.jigra-companion-root.state-idle .jigra-anim-body-group {
+  animation: jigraGentleBob 3s infinite ease-in-out;
+}
+
+.jigra-companion-root.state-focusing .jigra-anim-body-group {
+  animation: jigraFocusBreathing 2.4s infinite ease-in-out;
+}
+
+.jigra-companion-root.state-distracted .jigra-avatar-wrapper {
+  animation: jigraGlassTap 0.6s infinite ease-in-out;
+}
+
+.jigra-companion-root.state-celebrating .jigra-avatar-wrapper {
+  animation: jigraDance 0.8s infinite ease-in-out;
+}
+
+@keyframes jigraGentleBob {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes jigraFocusBreathing {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-4px) scale(1.02); }
+}
+
+@keyframes jigraGlassTap {
+  0%, 100% { transform: scale(1) translateX(0) rotate(0deg); }
+  25% { transform: scale(1.1) translateX(-6px) rotate(-4deg); }
+  50% { transform: scale(1.1) translateX(6px) rotate(4deg); }
+  75% { transform: scale(1.15) translateY(-6px); }
+}
+
+@keyframes jigraDance {
+  0% { transform: translateY(0) rotate(0deg) scale(1); }
+  25% { transform: translateY(-14px) rotate(-12deg) scale(1.15); }
+  50% { transform: translateY(0) rotate(0deg) scale(1); }
+  75% { transform: translateY(-14px) rotate(12deg) scale(1.15); }
+  100% { transform: translateY(0) rotate(0deg) scale(1); }
+}
+
+/* Aura & Particle animations */
+.jigra-anim-pulse {
+  animation: jigraGlowPulse 2.5s infinite ease-in-out;
+  transform-origin: center;
+}
+
+@keyframes jigraGlowPulse {
+  0%, 100% { opacity: 0.6; transform: scale(0.95); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+.jigra-anim-blink {
+  transform-origin: center;
+  animation: jigraBlinkCycle 4s infinite;
+}
+
+@keyframes jigraBlinkCycle {
+  0%, 94%, 100% { transform: scaleY(1); }
+  96% { transform: scaleY(0.1); }
+}
+
+.jigra-anim-book {
+  animation: jigraBookFloat 2.4s infinite ease-in-out;
+}
+
+@keyframes jigraBookFloat {
+  0%, 100% { transform: translate(38px, 62px); }
+  50% { transform: translate(38px, 59px); }
+}
+
+/* Aura Particle Keyframes */
+.jigra-anim-aura-sparkle {
+  transform-origin: 54px 54px;
+  animation: jigraAuraRotate 6s infinite linear;
+}
+
+@keyframes jigraAuraRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.jigra-anim-aura-matrix text {
+  animation: jigraMatrixFlicker 1.8s infinite ease-in-out alternate;
+}
+
+@keyframes jigraMatrixFlicker {
+  0% { opacity: 0.3; transform: translateY(-2px); }
+  100% { opacity: 1; transform: translateY(2px); }
+}
+
+.jigra-anim-aura-zen path {
+  transform-origin: 54px 54px;
+  animation: jigraZenSway 4s infinite ease-in-out alternate;
+}
+
+@keyframes jigraZenSway {
+  0% { transform: rotate(-8deg) scale(0.95); }
+  100% { transform: rotate(8deg) scale(1.05); }
+}
+
+/* Mini Timer Pill Badge attached below companion */
+.jigra-timer-pill {
+  margin-top: 4px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(249, 115, 22, 0.4);
+  color: #ffedd5;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: monospace;
+  padding: 3px 10px;
+  border-radius: 12px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  pointer-events: auto;
+}
+
+.jigra-timer-pill.pill-break {
+  border-color: rgba(16, 185, 129, 0.6);
+  color: #a7f3d0;
+}
+
+.jigra-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #f97316;
+  box-shadow: 0 0 6px #f97316;
+  animation: jigraDotBlink 1.5s infinite;
+}
+
+.pill-break .jigra-status-dot {
+  background: #10b981;
+  box-shadow: 0 0 6px #10b981;
+}
+
+@keyframes jigraDotBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* Speech / Thought Bubble */
+.jigra-speech-bubble {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  margin-bottom: 12px;
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(16px);
+  color: #f8fafc;
+  border: 1px solid rgba(249, 115, 22, 0.35);
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
+  max-width: 200px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(10px) scale(0.9);
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  white-space: normal;
+}
+
+.jigra-speech-bubble.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.jigra-speech-bubble::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  right: 32px;
+  border-width: 6px;
+  border-style: solid;
+  border-color: rgba(15, 23, 42, 0.92) transparent transparent transparent;
+}
+
+/* Mini HUD Popup on Click */
+.jigra-hud-panel {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  margin-bottom: 14px;
+  width: 300px;
+  background: rgba(15, 23, 42, 0.96);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55), 0 0 20px rgba(249, 115, 22, 0.15);
+  color: #f8fafc;
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+  cursor: default;
+}
+
+.jigra-hud-panel.open {
+  display: flex;
+  animation: hudPop 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes hudPop {
+  from { opacity: 0; transform: translateY(12px) scale(0.92); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.jigra-hud-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 8px;
+}
+
+.jigra-hud-title {
+  font-size: 14px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #ffedd5, #f97316);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.jigra-hud-close {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+.jigra-hud-close:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.jigra-hud-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  background: rgba(30, 41, 59, 0.5);
+  padding: 10px;
+  border-radius: 12px;
+}
+
+.jigra-hud-stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.jigra-hud-stat-label {
+  font-size: 10px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.jigra-hud-stat-val {
+  font-size: 14px;
+  font-weight: 800;
+  color: #38bdf8;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Interval Customization in HUD */
+.jigra-hud-interval-box {
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.jigra-interval-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.jigra-interval-label {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.jigra-interval-status-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.jigra-interval-status-badge.badge-locked {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.jigra-interval-select {
+  width: 100%;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #f8fafc;
+  padding: 6px 8px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+}
+
+.jigra-interval-select:focus {
+  border-color: #f97316;
+}
+
+.jigra-interval-select option {
+  background: #0f172a;
+  color: #f8fafc;
+}
+
+/* Action Buttons Grid */
+.jigra-hud-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+}
+
+.jigra-hud-btn {
+  padding: 8px 6px;
+  border-radius: 10px;
+  border: none;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.jigra-btn-primary {
+  background: linear-gradient(135deg, #ea580c, #f97316);
+  color: white;
+  box-shadow: 0 4px 10px rgba(249, 115, 22, 0.35);
+}
+
+.jigra-btn-primary:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.jigra-btn-game {
+  background: linear-gradient(135deg, #0284c7, #06b6d4);
+  color: white;
+  box-shadow: 0 4px 10px rgba(6, 182, 212, 0.35);
+}
+
+.jigra-btn-game:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.jigra-btn-game.is-locked {
+  background: rgba(51, 65, 85, 0.6);
+  color: #94a3b8;
+  box-shadow: none;
+}
+
+.jigra-btn-secondary {
+  background: rgba(51, 65, 85, 0.7);
+  color: #cbd5e1;
+}
+
+.jigra-btn-secondary:hover {
+  background: rgba(71, 85, 105, 0.9);
+  color: white;
+}
+
+/* In-Page Mini-Game Modal */
+#jigra-inpage-game-modal {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 2147483647;
+  background: rgba(10, 15, 28, 0.88);
+  backdrop-filter: blur(16px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  color: #f8fafc;
+}
+
+.jigra-inpage-container {
+  background: #0f172a;
+  border: 1px solid rgba(249, 115, 22, 0.35);
+  border-radius: 24px;
+  padding: 28px;
+  max-width: 620px;
+  width: 96%;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(249, 115, 22, 0.2);
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.jigra-inpage-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 14px;
+}
+
+.jigra-inpage-title-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.jigra-inpage-title {
+  font-size: 18px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #ffedd5, #f97316);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.jigra-inpage-game-switch {
+  display: flex;
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 2px;
+}
+
+.jigra-inpage-switch-btn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.jigra-inpage-switch-btn.active {
+  background: #1e293b;
+  color: #ffedd5;
+  border: 1px solid rgba(249, 115, 22, 0.3);
+}
+
+.jigra-inpage-close {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: all 0.15s;
+}
+
+.jigra-inpage-close:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* In-Page Game Arena Elements */
+.game-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.game-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 20px;
+  background: rgba(30, 41, 59, 0.6);
+  padding: 12px 20px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.game-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #94a3b8;
+  margin-bottom: 2px;
+}
+
+.stat-value {
+  font-size: 16px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.stat-value.timer-val {
+  font-family: monospace;
+  color: #06b6d4;
+}
+
+.memory-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  width: 100%;
+  perspective: 1000px;
+}
+
+.memory-card {
+  aspect-ratio: 1;
+  cursor: pointer;
+  position: relative;
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-style: preserve-3d;
+  border-radius: 14px;
+}
+
+.memory-card.flipped .card-inner,
+.memory-card.matched .card-inner {
+  transform: rotateY(180deg);
+}
+
+.card-front, .card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  font-size: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.card-front {
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  color: #94a3b8;
+}
+
+.card-back {
+  background: linear-gradient(135deg, #334155, #1e293b);
+  transform: rotateY(180deg);
+  border-color: rgba(249, 115, 22, 0.4);
+}
+
+.memory-card.matched .card-back {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), #1e293b);
+  border-color: #10b981;
+}
+
+.quote-display-box {
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 20px 24px;
+  font-size: 17px;
+  line-height: 1.6;
+  color: #64748b;
+  margin-bottom: 20px;
+  width: 100%;
+  user-select: none;
+}
+
+.char.correct {
+  color: #34d399;
+}
+
+.char.incorrect {
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.2);
+  border-radius: 2px;
+}
+
+.char.current {
+  color: #ffffff;
+  border-bottom: 2px solid #f97316;
+}
+
+.typing-input-wrapper {
+  width: 100%;
+}
+
+.typer-input {
+  width: 100%;
+  background: rgba(15, 23, 42, 0.9);
+  border: 2px solid rgba(249, 115, 22, 0.3);
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-size: 15px;
+  color: #ffffff;
+  outline: none;
+}
+
+.typer-input:focus {
+  border-color: #f97316;
+}
+
+.game-result-modal {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(12px);
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.result-box {
+  background: #1e293b;
+  border: 1px solid rgba(249, 115, 22, 0.4);
+  border-radius: 20px;
+  padding: 32px 28px;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.result-icon {
+  font-size: 40px;
+  margin-bottom: 8px;
+}
+
+.result-title {
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.result-desc {
+  font-size: 13px;
+  color: #94a3b8;
+  line-height: 1.4;
+  margin-bottom: 16px;
+}
+
+.reward-pill {
+  background: rgba(251, 191, 36, 0.15);
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  color: #fbbf24;
+  font-weight: 800;
+  font-size: 13px;
+  padding: 5px 14px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+}
+
+.game-btn-next {
+  background: linear-gradient(135deg, #ea580c, #f97316);
+  color: white;
+  border: none;
+  font-size: 14px;
+  font-weight: 800;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  width: 100%;
+}
+

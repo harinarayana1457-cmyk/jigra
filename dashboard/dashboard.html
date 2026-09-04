@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jigra Study Companion & Bazaar</title>
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar">
+    <div class="brand-section">
+      <img src="../icons/icon48.png" alt="Jigra Logo" class="brand-icon">
+      <div>
+        <span class="brand-title">Jigra</span>
+        <span class="brand-tag">PRO</span>
+      </div>
+    </div>
+
+    <ul class="nav-links">
+      <li class="nav-item active" data-tab="focus-hub">
+        <span class="nav-icon">📊</span>
+        <span>Focus Hub</span>
+      </li>
+      <li class="nav-item" data-tab="bazaar">
+        <span class="nav-icon">🛍️</span>
+        <span>Cosmetics Bazaar</span>
+      </li>
+      <li class="nav-item" data-tab="evolution">
+        <span class="nav-icon">🌟</span>
+        <span>Companion Evolution</span>
+      </li>
+      <li class="nav-item" data-tab="arcade">
+        <span class="nav-icon">🎮</span>
+        <span>Micro-Break Arcade</span>
+      </li>
+    </ul>
+
+    <div class="wallet-box">
+      <div class="wallet-stat">
+        <span class="wallet-stat-label">Sparks Wallet</span>
+        <span class="wallet-stat-val val-sparks">
+          <span>✨</span>
+          <span id="dash-wallet-sparks">0</span>
+        </span>
+      </div>
+      <div class="wallet-stat">
+        <span class="wallet-stat-label">Daily Streak</span>
+        <span class="wallet-stat-val val-streak">
+          <span>🔥</span>
+          <span id="dash-wallet-streak">0d</span>
+        </span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content Viewports -->
+  <main class="main-content">
+    <!-- Tab 1: Focus Hub -->
+    <section class="tab-pane active" id="tab-focus-hub">
+      <div class="pane-header">
+        <h1 class="pane-title">Focus Command Center</h1>
+        <p class="pane-desc">Shield your study sessions from YouTube doom-scrolling and build productive momentum.</p>
+      </div>
+
+      <div class="focus-hub-grid">
+        <!-- Main Hub Timer -->
+        <div class="card hub-timer-card">
+          <div class="hub-timer-modes">
+            <button class="hub-mode-btn active" data-mode="standard">Standard (25m)</button>
+            <button class="hub-mode-btn" data-mode="focus">Deep (45m)</button>
+            <button class="hub-mode-btn" data-mode="ultra">Ultra (50m)</button>
+          </div>
+
+          <div class="hub-timer-clock" id="hub-clock-display">25:00</div>
+          <div class="hub-timer-phase" id="hub-phase-label">Ready to Focus</div>
+
+          <div class="hub-controls-row">
+            <button class="btn-hub-primary" id="hub-btn-start">
+              <span id="hub-btn-icon">▶</span>
+              <span id="hub-btn-text">Start Focus</span>
+            </button>
+            <button class="btn-hub-secondary" id="hub-btn-reset">↺ Reset</button>
+            <button class="btn-hub-secondary" id="hub-btn-skip">⏭ Skip</button>
+          </div>
+        </div>
+
+        <!-- Metric Cards Grid -->
+        <div class="stats-subgrid">
+          <div class="stat-metric-card">
+            <div class="metric-header">
+              <span class="metric-title">Total Focus Time</span>
+              <span class="metric-icon">⏳</span>
+            </div>
+            <div class="metric-value" id="stat-total-minutes">0m</div>
+            <div class="metric-desc">Across all completed sprints</div>
+          </div>
+
+          <div class="stat-metric-card">
+            <div class="metric-header">
+              <span class="metric-title">Sprint Blocks</span>
+              <span class="metric-icon">🎯</span>
+            </div>
+            <div class="metric-value" id="stat-session-count">0</div>
+            <div class="metric-desc">Sessions completed today</div>
+          </div>
+
+          <div class="stat-metric-card">
+            <div class="metric-header">
+              <span class="metric-title">Companion Level</span>
+              <span class="metric-icon">🌱</span>
+            </div>
+            <div class="metric-value" id="stat-companion-level">Lv. 1</div>
+            <div class="metric-desc" id="stat-companion-stage">Flame Sprout</div>
+          </div>
+
+          <div class="stat-metric-card">
+            <div class="metric-header">
+              <span class="metric-title">YouTube Shield</span>
+              <span class="metric-icon">🛡️</span>
+            </div>
+            <div class="metric-value" style="color: #10b981;">Active</div>
+            <div class="metric-desc">Shorts & Recs stripped</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Session History -->
+      <div class="card history-section">
+        <h3 style="font-size: 17px; font-weight: 800; margin-bottom: 4px;">Recent Study Sprints</h3>
+        <p style="font-size: 13px; color: var(--text-muted);">Your log of protected deep work sessions.</p>
+        <div class="history-list" id="hub-history-list">
+          <!-- Dynamically filled -->
+          <div class="history-row" style="color: var(--text-muted); justify-content: center;">
+            No sessions completed today yet. Start a focus sprint to begin your streak!
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab 2: Customization Bazaar -->
+    <section class="tab-pane" id="tab-bazaar">
+      <div class="pane-header">
+        <h1 class="pane-title">Cosmetics Bazaar</h1>
+        <p class="pane-desc">Spend your hard-earned Sparks to customize your companion's appearance, hats, and magical auras.</p>
+      </div>
+
+      <div class="bazaar-filters">
+        <button class="filter-btn active" data-filter="all">All Items</button>
+        <button class="filter-btn" data-filter="hat">Hats & Specs</button>
+        <button class="filter-btn" data-filter="skin">Companion Skins</button>
+        <button class="filter-btn" data-filter="aura">Auras & Trails</button>
+      </div>
+
+      <div class="bazaar-grid" id="bazaar-items-grid">
+        <!-- Dynamically rendered items -->
+      </div>
+    </section>
+
+    <!-- Tab 3: Companion Evolution -->
+    <section class="tab-pane" id="tab-evolution">
+      <div class="pane-header">
+        <h1 class="pane-title">Companion Evolution Tree</h1>
+        <p class="pane-desc">As you log study hours, your companion absorbs your focus energy and evolves into mythical forms.</p>
+      </div>
+
+      <div class="evolution-layout">
+        <!-- Left: Companion Showcase Box -->
+        <div class="card companion-showcase-box">
+          <div class="companion-avatar-stage" id="showcase-avatar-container">
+            <!-- Dynamic SVG companion -->
+          </div>
+          <h2 style="font-size: 20px; font-weight: 800;" id="showcase-name">Ignis</h2>
+          <span style="font-size: 13px; color: var(--primary-orange); font-weight: 700; margin-top: 2px;" id="showcase-stage-label">Flame Sprout</span>
+          
+          <div style="width: 100%; margin-top: 16px;">
+            <div class="xp-bar-container" style="height: 8px;">
+              <div class="xp-bar-fill" id="showcase-xp-bar" style="width: 25%;"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-top: 6px;">
+              <span id="showcase-level-text">Level 1</span>
+              <span id="showcase-xp-text">25 / 100 XP</span>
+            </div>
+          </div>
+
+          <div class="emote-tester-row">
+            <button class="btn-emote active" data-state="idle">Idle</button>
+            <button class="btn-emote" data-state="focusing">Focusing</button>
+            <button class="btn-emote" data-state="distracted">Distracted</button>
+            <button class="btn-emote" data-state="celebrating">Dance</button>
+          </div>
+        </div>
+
+        <!-- Right: Stages List -->
+        <div class="evolution-tree-cards" id="evolution-stages-list">
+          <!-- Dynamically populated stages -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab 4: Micro-Break Arcade -->
+    <section class="tab-pane" id="tab-arcade">
+      <div class="pane-header">
+        <h1 class="pane-title">Micro-Break Brain Resets</h1>
+        <p class="pane-desc">Quick 60-second games to reset your dopamine receptors and working memory between focus blocks.</p>
+      </div>
+
+      <div class="arcade-header-bar">
+        <div class="arcade-game-tabs">
+          <button class="game-tab-btn active" data-game="memory">
+            <span>🧠</span>
+            <span>6-Pair Memory Matrix</span>
+          </button>
+          <button class="game-tab-btn" data-game="typer">
+            <span>⚡</span>
+            <span>Speed Quote Typer</span>
+          </button>
+        </div>
+        <button class="btn-hub-secondary" id="btn-restart-game" style="padding: 10px 18px;">
+          ↺ Restart Game
+        </button>
+      </div>
+
+      <!-- Game Interval Configuration Card -->
+      <div class="card" style="margin-bottom: 20px; padding: 20px 24px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+          <div>
+            <h3 style="font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+              <span>⏱️ Game Access Interval</span>
+            </h3>
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+              Control when games unlock during your study schedule.
+            </p>
+          </div>
+          <span id="dash-interval-status-badge" style="font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 8px; background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3);">
+            Ready to Play!
+          </span>
+        </div>
+        
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="dash-interval-btn-group">
+          <button class="filter-btn active" data-interval="every_sprint">Every Sprint</button>
+          <button class="filter-btn" data-interval="every_2_sprints">Every 2 Sprints</button>
+          <button class="filter-btn" data-interval="every_4_sprints">Every 4 Sprints</button>
+          <button class="filter-btn" data-interval="time_30m">Every 30 Mins</button>
+          <button class="filter-btn" data-interval="time_60m">Every 60 Mins</button>
+          <button class="filter-btn" data-interval="anytime">Anytime (Free Play)</button>
+        </div>
+      </div>
+
+      <div class="game-arena" id="arcade-arena">
+        <!-- Mini game injected here -->
+      </div>
+    </section>
+  </main>
+
+  <!-- Scripts -->
+  <script src="../shared/storage.js"></script>
+  <script src="../shared/audio.js"></script>
+  <script src="../shared/companion_renderer.js"></script>
+  <script src="games/memory_match.js"></script>
+  <script src="games/speed_typer.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>

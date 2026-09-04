@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jigra Focus</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="brand">
+      <img src="../icons/icon32.png" alt="Jigra Logo" class="brand-icon">
+      <h1 class="brand-title">Jigra</h1>
+    </div>
+    <div class="header-badges">
+      <div class="badge" title="Total Sparks Currency">
+        <span>✨</span>
+        <span id="badge-sparks">0</span>
+      </div>
+      <div class="badge" title="Consecutive Focus Days">
+        <span>🔥</span>
+        <span id="badge-streak">0d</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mode Selector -->
+  <div class="mode-selector">
+    <button class="mode-btn active" data-mode="standard">Standard (25m)</button>
+    <button class="mode-btn" data-mode="focus">Deep Focus (45m)</button>
+    <button class="mode-btn" data-mode="ultra">Ultra (50m)</button>
+  </div>
+
+  <!-- Circular Timer Display -->
+  <div class="timer-container">
+    <svg class="timer-circle-svg" viewBox="0 0 160 160">
+      <circle class="timer-circle-bg" cx="80" cy="80" r="70" />
+      <circle class="timer-circle-progress" id="timer-progress" cx="80" cy="80" r="70" stroke-dasharray="440" stroke-dashoffset="0" />
+    </svg>
+    <div class="timer-inner-content">
+      <div class="timer-clock" id="timer-display">25:00</div>
+      <div class="timer-state-label" id="timer-state-label">Ready to Study</div>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls-row">
+    <button class="btn-primary" id="btn-main-action">
+      <span id="btn-main-icon">▶</span>
+      <span id="btn-main-text">Start Focus</span>
+    </button>
+    <button class="btn-icon" id="btn-reset" title="Reset Session">
+      ↺
+    </button>
+    <button class="btn-icon" id="btn-skip" title="Skip to Break">
+      ⏭
+    </button>
+  </div>
+
+  <!-- Companion Mini Card -->
+  <div class="companion-card" id="companion-card" title="Click to view Evolution & Bazaar">
+    <div class="companion-avatar-box" id="companion-avatar-container">
+      <!-- Injected SVG companion -->
+    </div>
+    <div class="companion-info">
+      <div class="companion-name-row">
+        <span class="companion-name" id="companion-name-display">Ignis</span>
+        <span class="companion-stage" id="companion-stage-display">Flame Sprout</span>
+      </div>
+      <div class="xp-bar-container">
+        <div class="xp-bar-fill" id="companion-xp-fill" style="width: 20%;"></div>
+      </div>
+      <span class="xp-label" id="companion-xp-label">Level 1 • 20/100 XP</span>
+    </div>
+  </div>
+
+  <!-- Micro-Break Arcade Shortcut & Interval Info -->
+  <div class="popup-arcade-card">
+    <div class="arcade-card-info">
+      <span class="arcade-card-label">🎮 Micro-Break Games</span>
+      <span class="arcade-card-status" id="popup-interval-status">Checking...</span>
+    </div>
+    <button class="btn-popup-arcade" id="btn-popup-arcade">
+      🎮 Play
+    </button>
+  </div>
+
+  <!-- Footer Quick Links -->
+  <footer class="footer-row">
+    <button class="dashboard-btn" id="btn-open-dashboard">
+      <span>🚀 Open Bazaar & Games</span>
+    </button>
+    <div class="footer-toggles">
+      <button class="toggle-btn active" id="btn-toggle-shield" title="YouTube Focus Shield Active">
+        <span>🛡️ Shield</span>
+      </button>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="../shared/storage.js"></script>
+  <script src="../shared/audio.js"></script>
+  <script src="../shared/companion_renderer.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

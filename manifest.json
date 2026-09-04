@@ -1,0 +1,75 @@
+{
+  "manifest_version": 3,
+  "name": "Jigra - Focus Companion & YouTube Shield",
+  "version": "1.0.0",
+  "description": "Gamified study companion, YouTube doom-scrolling shield, Pomodoro timer, and 60-second micro-break games.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "permissions": [
+    "storage",
+    "alarms",
+    "activeTab",
+    "scripting",
+    "notifications"
+  ],
+  "host_permissions": [
+    "*://*.youtube.com/*",
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background/service_worker.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.youtube.com/*"],
+      "css": ["content_scripts/youtube_shield.css"],
+      "js": [
+        "shared/storage.js",
+        "shared/audio.js",
+        "shared/companion_renderer.js",
+        "content_scripts/youtube_shield.js"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "css": ["content_scripts/companion_overlay.css"],
+      "js": [
+        "shared/storage.js",
+        "shared/audio.js",
+        "shared/companion_renderer.js",
+        "content_scripts/confetti.js",
+        "dashboard/games/memory_match.js",
+        "dashboard/games/speed_typer.js",
+        "content_scripts/companion_overlay.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "content_scripts/companion_overlay.css",
+        "icons/*"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "options_ui": {
+    "page": "dashboard/dashboard.html",
+    "open_in_tab": true
+  }
+}

@@ -1,0 +1,525 @@
+/**
+ * Jigra Floating Screen Companion Content Script
+ * Injected into active browser tabs. Features Shadow DOM encapsulation,
+ * smooth physics dragging, dockable edges, reactive state animations,
+ * in-browser game launcher, and customizable interval controls.
+ */
+
+(function () {
+  // Prevent duplicate injection
+  if (document.getElementById('jigra-companion-host')) return;
+
+  let shadowRoot = null;
+  let companionData = { skin: 'ember', hat: 'none', aura: 'none', level: 1, exp: 0, expToNext: 100 };
+  let economyData = { sparks: 50, streakDays: 1, totalMinutesFocused: 0 };
+  let timerData = { state: 'IDLE', mode: 'standard', remainingSeconds: 1500, targetTimestamp: null };
+  let settingsData = {
+    soundEnabled: true,
+    gameInterval: { mode: 'every_sprint', sprintsSinceLastGame: 0, minutesSinceLastGame: 0 }
+  };
+  let currentState = 'idle'; // 'idle' | 'focusing' | 'distracted' | 'celebrating'
+  let speechTimeout = null;
+  let activeInPageGame = null;
+  let currentInPageGameType = 'memory';
+
+  // Drag state
+  let isDragging = false;
+  let dragStartX = 0;
+  let dragStartY = 0;
+  let currentPosX = window.innerWidth - 110;
+  let currentPosY = window.innerHeight - 130;
+  let hasMoved = false;
+
+  async function initCompanion() {
+    // Wait for dependencies if necessary
+    if (typeof JigraStorage === 'undefined' || typeof JigraRenderer === 'undefined') {
+      setTimeout(initCompanion, 80);
+      return;
+    }
+
+    const host = document.createElement('div');
+    host.id = 'jigra-companion-host';
+    (document.body || document.documentElement).appendChild(host);
+
+    shadowRoot = host.attachShadow({ mode: 'open' });
+
+    // Load styles
+    const styleLink = document.createElement('link');
+    styleLink.rel = 'stylesheet';
+    styleLink.href = chrome.runtime.getURL('content_scripts/companion_overlay.css');
+    shadowRoot.appendChild(styleLink);
+
+    // Initial data fetch
+    const store = await JigraStorage.get();
+    companionData = store.companion;
+    economyData = store.economy;
+    timerData = store.timer;
+    settingsData = store.settings || settingsData;
+
+    updateCurrentStateFromTimer();
+    renderCompanionUI();
+    setupDragEvents();
+    setupListeners();
+
+    // Start 1s countdown tick
+    setInterval(tickTimer, 1000);
+  }
+
+  function updateCurrentStateFromTimer() {
+    if (timerData.state === 'FOCUS') {
+      currentState = 'focusing';
+    } else if (timerData.state === 'BREAK') {
+      currentState = 'celebrating';
+    } else {
+      currentState = 'idle';
+    }
+  }
+
+  function getRemainingSeconds() {
+    if (timerData.targetTimestamp && (timerData.state === 'FOCUS' || timerData.state === 'BREAK')) {
+      return Math.max(0, Math.ceil((timerData.targetTimestamp - Date.now()) / 1000));
+    }
+    return timerData.remainingSeconds || 0;
+  }
+
+  function formatTime(secs) {
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  }
+
+  function renderCompanionUI() {
+    let container = shadowRoot.getElementById('jigra-root');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'jigra-root';
+      container.className = `jigra-companion-root state-${currentState}`;
+      shadowRoot.appendChild(container);
+    } else {
+      container.className = `jigra-companion-root state-${currentState}`;
+    }
+
+    const remaining = getRemainingSeconds();
+    const formattedTime = formatTime(remaining);
+    const isBreak = timerData.state === 'BREAK';
+    const svgContent = JigraRenderer.renderSVG(companionData, currentState, 84);
+
+    // Check game interval access
+    const gameAccess = JigraStorage.checkGameAccess({
+      settings: settingsData,
+      timer: timerData
+    });
+    const intervalMode = settingsData?.gameInterval?.mode || 'every_sprint';
+
+    container.innerHTML = `
+      <!-- Thought / Warning Bubble -->
+      <div class="jigra-speech-bubble" id="jigra-bubble"></div>
+
+      <!-- Mini HUD Menu -->
+      <div class="jigra-hud-panel" id="jigra-hud">
+        <div class="jigra-hud-header">
+          <span class="jigra-hud-title">${companionData.name} • Lv. ${companionData.level}</span>
+          <button class="jigra-hud-close" id="jigra-hud-close">✕</button>
+        </div>
+        <div class="jigra-hud-stats">
+          <div class="jigra-hud-stat-item">
+            <span class="jigra-hud-stat-label">Sparks</span>
+            <span class="jigra-hud-stat-val">✨ ${economyData.sparks}</span>
+          </div>
+          <div class="jigra-hud-stat-item">
+            <span class="jigra-hud-stat-label">Streak</span>
+            <span class="jigra-hud-stat-val">🔥 ${economyData.streakDays}d</span>
+          </div>
+        </div>
+
+        <!-- Customizable Game Interval Selector -->
+        <div class="jigra-hud-interval-box">
+          <div class="jigra-interval-header-row">
+            <span class="jigra-interval-label">🎮 Play Games Interval</span>
+            <span class="jigra-interval-status-badge ${gameAccess.allowed ? '' : 'badge-locked'}" id="jigra-interval-badge">
+              ${gameAccess.progressText}
+            </span>
+          </div>
+          <select class="jigra-interval-select" id="jigra-hud-interval-select" title="Customize when mini-games can be played">
+            <option value="every_sprint" ${intervalMode === 'every_sprint' ? 'selected' : ''}>After Every Sprint (Default)</option>
+            <option value="every_2_sprints" ${intervalMode === 'every_2_sprints' ? 'selected' : ''}>Every 2 Sprints (50m Focus)</option>
+            <option value="every_4_sprints" ${intervalMode === 'every_4_sprints' ? 'selected' : ''}>Every 4 Sprints (Long Block)</option>
+            <option value="time_30m" ${intervalMode === 'time_30m' ? 'selected' : ''}>Every 30 Mins Focus</option>
+            <option value="time_60m" ${intervalMode === 'time_60m' ? 'selected' : ''}>Every 60 Mins Focus</option>
+            <option value="anytime" ${intervalMode === 'anytime' ? 'selected' : ''}>Anytime (Free Play)</option>
+          </select>
+        </div>
+
+        <!-- Actions Row: Focus, Play Game, Bazaar -->
+        <div class="jigra-hud-actions">
+          <button class="jigra-hud-btn jigra-btn-primary" id="jigra-hud-timer-btn" title="Toggle study session">
+            ${timerData.state === 'FOCUS' ? '⏸ Pause' : '▶ Focus'}
+          </button>
+          <button class="jigra-hud-btn jigra-btn-game ${gameAccess.allowed ? '' : 'is-locked'}" id="jigra-hud-game-btn" title="${gameAccess.reason}">
+            ${gameAccess.allowed ? '🎮 Play' : '🔒 Play'}
+          </button>
+          <button class="jigra-hud-btn jigra-btn-secondary" id="jigra-hud-bazaar-btn" title="Open Customization Bazaar">
+            🛍️ Bazaar
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Companion Character Wrapper -->
+      <div class="jigra-avatar-wrapper" id="jigra-avatar">
+        ${svgContent}
+      </div>
+
+      <!-- Timer Pill -->
+      <div class="jigra-timer-pill ${isBreak ? 'pill-break' : ''}" id="jigra-pill">
+        <div class="jigra-status-dot"></div>
+        <span id="jigra-pill-time">${formattedTime}</span>
+      </div>
+    `;
+
+    // Position container
+    updatePositionStyles();
+
+    // Bind HUD buttons
+    shadowRoot.getElementById('jigra-hud-close')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleHUD(false);
+    });
+
+    shadowRoot.getElementById('jigra-hud-bazaar-btn')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      chrome.runtime.sendMessage({ type: 'OPEN_DASHBOARD', payload: { tab: 'bazaar' } });
+      toggleHUD(false);
+    });
+
+    shadowRoot.getElementById('jigra-hud-timer-btn')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (timerData.state === 'FOCUS') {
+        chrome.runtime.sendMessage({ type: 'PAUSE_TIMER' });
+      } else if (timerData.state === 'PAUSED') {
+        chrome.runtime.sendMessage({ type: 'RESUME_TIMER' });
+      } else {
+        chrome.runtime.sendMessage({ type: 'START_TIMER', payload: { mode: timerData.mode } });
+      }
+      toggleHUD(false);
+    });
+
+    // Play Game Button
+    shadowRoot.getElementById('jigra-hud-game-btn')?.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      if (!gameAccess.allowed) {
+        if (typeof JigraAudio !== 'undefined') JigraAudio.playWarning();
+        showSpeechBubble(`🔒 ${gameAccess.reason} (Tip: Select 'Anytime' above for Free Play!)`, 5000);
+        return;
+      }
+      if (typeof JigraAudio !== 'undefined') JigraAudio.playClick();
+      toggleHUD(false);
+
+      // If user is playing in the middle of an active session, pause timer so no study minutes are lost
+      let wasInActiveSession = false;
+      if (timerData.state === 'FOCUS') {
+        wasInActiveSession = true;
+        await chrome.runtime.sendMessage({ type: 'PAUSE_TIMER' });
+      }
+
+      openInPageMiniGame(currentInPageGameType, wasInActiveSession);
+    });
+
+    // Interval Selector dropdown change
+    shadowRoot.getElementById('jigra-hud-interval-select')?.addEventListener('change', async (e) => {
+      e.stopPropagation();
+      const newMode = e.target.value;
+      await JigraStorage.updateGameIntervalMode(newMode);
+      if (typeof JigraAudio !== 'undefined') JigraAudio.playClick();
+      const updated = await JigraStorage.get();
+      settingsData = updated.settings;
+      renderCompanionUI();
+      toggleHUD(true);
+      showSpeechBubble(`🎮 Game interval set: ${JigraStorage.GAME_INTERVAL_MODES[newMode]?.label || newMode}`, 3500);
+    });
+  }
+
+  /* ------------------- IN-PAGE MINI-GAME MODAL ------------------- */
+  function openInPageMiniGame(gameType = 'memory', wasInActiveSession = false) {
+    closeInPageMiniGame();
+    currentInPageGameType = gameType;
+
+    const modal = document.createElement('div');
+    modal.id = 'jigra-inpage-game-modal';
+
+    modal.innerHTML = `
+      <div class="jigra-inpage-container">
+        <div class="jigra-inpage-header">
+          <div class="jigra-inpage-title-box">
+            <span style="font-size: 20px;">🎮</span>
+            <span class="jigra-inpage-title">Micro-Break Brain Reset (60s)</span>
+          </div>
+          <div class="jigra-inpage-game-switch">
+            <button class="jigra-inpage-switch-btn ${gameType === 'memory' ? 'active' : ''}" id="jigra-modal-switch-mem">
+              🧠 Memory
+            </button>
+            <button class="jigra-inpage-switch-btn ${gameType === 'typer' ? 'active' : ''}" id="jigra-modal-switch-typ">
+              ⚡ Typer
+            </button>
+          </div>
+          <button class="jigra-inpage-close" id="jigra-modal-close" title="Close">✕</button>
+        </div>
+        <div id="jigra-inpage-arena"></div>
+      </div>
+    `;
+
+    shadowRoot.appendChild(modal);
+
+    const arena = modal.querySelector('#jigra-inpage-arena');
+
+    const onGameFinished = async () => {
+      await JigraStorage.recordGamePlayed();
+      if (typeof JigraAudio !== 'undefined') JigraAudio.playVictoryJingle();
+      if (typeof JigraConfetti !== 'undefined') {
+        JigraConfetti.launch({ count: 120 });
+      }
+
+      // Close modal after brief pause and resume or start next focus sprint
+      setTimeout(async () => {
+        closeInPageMiniGame();
+        const response = await chrome.runtime.sendMessage({ type: 'RESUME_OR_START_NEXT_SPRINT' });
+        if (response?.resumed) {
+          const rem = response.remainingSeconds || getRemainingSeconds();
+          showSpeechBubble(`⚡ Focus session resumed from ${formatTime(rem)}! Keep going.`, 4500);
+        } else {
+          showSpeechBubble('🚀 Focus Sprint started! You got this.', 4000);
+        }
+      }, 1500);
+    };
+
+    // Instantiate game
+    if (gameType === 'memory') {
+      const MemoryMatchClass = window.MemoryMatchGame || (typeof MemoryMatchGame !== 'undefined' ? MemoryMatchGame : null);
+      if (MemoryMatchClass) {
+        activeInPageGame = new MemoryMatchClass(arena, onGameFinished);
+      }
+    } else {
+      const SpeedTyperClass = window.SpeedTyperGame || (typeof SpeedTyperGame !== 'undefined' ? SpeedTyperGame : null);
+      if (SpeedTyperClass) {
+        activeInPageGame = new SpeedTyperClass(arena, onGameFinished);
+      }
+    }
+
+    // Modal events
+    modal.querySelector('#jigra-modal-close')?.addEventListener('click', async () => {
+      closeInPageMiniGame();
+      if (wasInActiveSession || timerData.state === 'PAUSED') {
+        await chrome.runtime.sendMessage({ type: 'RESUME_TIMER' });
+        showSpeechBubble('⚡ Session resumed!', 3000);
+      }
+    });
+
+    modal.querySelector('#jigra-modal-switch-mem')?.addEventListener('click', () => {
+      openInPageMiniGame('memory', wasInActiveSession);
+    });
+
+    modal.querySelector('#jigra-modal-switch-typ')?.addEventListener('click', () => {
+      openInPageMiniGame('typer', wasInActiveSession);
+    });
+  }
+
+  function closeInPageMiniGame() {
+    if (activeInPageGame && activeInPageGame.destroy) {
+      activeInPageGame.destroy();
+      activeInPageGame = null;
+    }
+    const existing = shadowRoot.getElementById('jigra-inpage-game-modal');
+    if (existing && existing.parentNode) {
+      existing.parentNode.removeChild(existing);
+    }
+  }
+
+  function updatePositionStyles() {
+    const root = shadowRoot?.getElementById('jigra-root');
+    if (!root) return;
+    root.style.position = 'fixed';
+    root.style.left = `${currentPosX}px`;
+    root.style.top = `${currentPosY}px`;
+  }
+
+  function setupDragEvents() {
+    const root = shadowRoot.getElementById('jigra-root');
+    if (!root) return;
+
+    const onPointerDown = (e) => {
+      // Don't drag if clicking inside HUD or modal
+      if (e.target.closest('#jigra-hud') || e.target.closest('#jigra-inpage-game-modal')) return;
+
+      isDragging = true;
+      hasMoved = false;
+      const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+      const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+
+      dragStartX = clientX - currentPosX;
+      dragStartY = clientY - currentPosY;
+      root.classList.add('is-dragging');
+
+      window.addEventListener('mousemove', onPointerMove, { passive: true });
+      window.addEventListener('mouseup', onPointerUp);
+      window.addEventListener('touchmove', onPointerMove, { passive: true });
+      window.addEventListener('touchend', onPointerUp);
+    };
+
+    const onPointerMove = (e) => {
+      if (!isDragging) return;
+      const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+      const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+
+      const nextX = clientX - dragStartX;
+      const nextY = clientY - dragStartY;
+
+      if (Math.abs(nextX - currentPosX) > 4 || Math.abs(nextY - currentPosY) > 4) {
+        hasMoved = true;
+      }
+
+      // Viewport bounds
+      const maxX = window.innerWidth - 100;
+      const maxY = window.innerHeight - 120;
+      currentPosX = Math.max(10, Math.min(maxX, nextX));
+      currentPosY = Math.max(10, Math.min(maxY, nextY));
+
+      updatePositionStyles();
+    };
+
+    const onPointerUp = () => {
+      if (!isDragging) return;
+      isDragging = false;
+      root.classList.remove('is-dragging');
+
+      window.removeEventListener('mousemove', onPointerMove);
+      window.removeEventListener('mouseup', onPointerUp);
+      window.removeEventListener('touchmove', onPointerMove);
+      window.removeEventListener('touchend', onPointerUp);
+
+      // Snap to closest edge (left or right)
+      const mid = window.innerWidth / 2;
+      if (currentPosX < mid) {
+        currentPosX = 16; // Snap Left
+      } else {
+        currentPosX = window.innerWidth - 104; // Snap Right
+      }
+      updatePositionStyles();
+
+      // If it was a clean click without moving, toggle HUD
+      if (!hasMoved) {
+        toggleHUD();
+      }
+    };
+
+    root.addEventListener('mousedown', onPointerDown);
+    root.addEventListener('touchstart', onPointerDown, { passive: true });
+  }
+
+  function toggleHUD(forceState) {
+    const hud = shadowRoot.getElementById('jigra-hud');
+    if (!hud) return;
+    const isOpen = hud.classList.contains('open');
+    const nextState = forceState !== undefined ? forceState : !isOpen;
+
+    if (nextState) {
+      hud.classList.add('open');
+      if (typeof JigraAudio !== 'undefined') JigraAudio.playClick();
+    } else {
+      hud.classList.remove('open');
+    }
+  }
+
+  function showSpeechBubble(message, duration = 4000) {
+    const bubble = shadowRoot.getElementById('jigra-bubble');
+    if (!bubble) return;
+
+    bubble.textContent = message;
+    bubble.classList.add('visible');
+
+    if (speechTimeout) clearTimeout(speechTimeout);
+    speechTimeout = setTimeout(() => {
+      bubble.classList.remove('visible');
+    }, duration);
+  }
+
+  function tickTimer() {
+    const remaining = getRemainingSeconds();
+    const formatted = formatTime(remaining);
+
+    const timeSpan = shadowRoot?.getElementById('jigra-pill-time');
+    if (timeSpan) {
+      timeSpan.textContent = formatted;
+    }
+  }
+
+  function setupListeners() {
+    // Listen for storage changes
+    JigraStorage.onChanged(async (changes) => {
+      const store = await JigraStorage.get();
+      companionData = store.companion;
+      economyData = store.economy;
+      timerData = store.timer;
+      settingsData = store.settings || settingsData;
+
+      updateCurrentStateFromTimer();
+      renderCompanionUI();
+    });
+
+    // Listen for runtime broadcasts
+    chrome.runtime.onMessage.addListener((message) => {
+      const { type, payload } = message;
+
+      if (type === 'STATE_CHANGED' && payload?.timer) {
+        timerData = payload.timer;
+        updateCurrentStateFromTimer();
+        renderCompanionUI();
+      } else if (type === 'DISTRACTION_ALERT') {
+        // Distraction detected!
+        currentState = 'distracted';
+        renderCompanionUI();
+        showSpeechBubble(payload?.reason || 'Tap tap! Back to work! 🚨', 5000);
+
+        if (typeof JigraAudio !== 'undefined') {
+          JigraAudio.playTapGlass();
+        }
+
+        setTimeout(() => {
+          updateCurrentStateFromTimer();
+          renderCompanionUI();
+        }, 5000);
+      } else if (type === 'TIMER_COMPLETED') {
+        // Victory celebration!
+        currentState = 'celebrating';
+        renderCompanionUI();
+        showSpeechBubble(`🎉 Session Complete! +${payload.sparksEarned} Sparks! Click 'Play' for your 60s micro-break! 🎮`, 7000);
+
+        // Sound fanfare
+        if (typeof JigraAudio !== 'undefined') {
+          JigraAudio.playVictoryJingle();
+        }
+
+        // Confetti burst from companion origin
+        if (typeof JigraConfetti !== 'undefined') {
+          JigraConfetti.launch({
+            x: currentPosX + 44,
+            y: currentPosY + 44,
+            count: 90
+          });
+        }
+      }
+    });
+
+    // Keep companion on screen on window resize
+    window.addEventListener('resize', () => {
+      currentPosX = Math.min(currentPosX, window.innerWidth - 104);
+      currentPosY = Math.min(currentPosY, window.innerHeight - 120);
+      updatePositionStyles();
+    });
+  }
+
+  // Initialize
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCompanion);
+  } else {
+    initCompanion();
+  }
+})();
