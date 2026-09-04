@@ -154,16 +154,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     const { state } = appData.timer;
     if (state === 'FOCUS') {
       hubPhaseLabel.textContent = '🔥 Study Session in Progress';
-      hubPhaseLabel.style.color = '#f97316';
+      hubPhaseLabel.style.color = '#de5b1b';
+      hubPhaseLabel.style.borderColor = '#de5b1b';
+      hubPhaseLabel.style.background = 'rgba(222, 91, 27, 0.12)';
     } else if (state === 'BREAK') {
       hubPhaseLabel.textContent = '☕ Micro-Break Active (60s Brain Reset)';
-      hubPhaseLabel.style.color = '#10b981';
+      hubPhaseLabel.style.color = '#15803d';
+      hubPhaseLabel.style.borderColor = '#15803d';
+      hubPhaseLabel.style.background = 'rgba(21, 128, 61, 0.12)';
     } else if (state === 'PAUSED') {
       hubPhaseLabel.textContent = '⏸ Study Session Paused';
-      hubPhaseLabel.style.color = '#94a3b8';
+      hubPhaseLabel.style.color = '#b45309';
+      hubPhaseLabel.style.borderColor = '#b45309';
+      hubPhaseLabel.style.background = 'rgba(180, 83, 9, 0.12)';
     } else {
       hubPhaseLabel.textContent = 'Ready to Focus';
-      hubPhaseLabel.style.color = '#cbd5e1';
+      hubPhaseLabel.style.color = '#5c544c';
+      hubPhaseLabel.style.borderColor = '#5c544c';
+      hubPhaseLabel.style.background = 'rgba(92, 84, 76, 0.10)';
     }
   }
 
@@ -201,14 +209,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         .map(
           (h) => `
         <div class="history-row">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <span style="font-size: 16px;">🔥</span>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 20px;">🔥</span>
             <div>
-              <div style="font-weight: 700; color: #f8fafc;">${h.minutes}m Focus Session</div>
-              <div style="font-size: 11px; color: #94a3b8;">${h.date} • Mode: ${h.mode}</div>
+              <div style="font-weight: 800; color: #141210; font-size: 14px;">${h.minutes}m Focus Session</div>
+              <div style="font-size: 12px; color: #5c544c; font-weight: 600;">${h.date} • Mode: ${h.mode}</div>
             </div>
           </div>
-          <span style="font-weight: 800; color: #fbbf24;">+${h.sparks} Sparks</span>
+          <span style="font-weight: 900; color: #b45309; font-size: 14px;">+${h.sparks} Sparks ★</span>
         </div>
       `
         )
@@ -348,14 +356,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         <div class="stage-card ${isUnlocked ? 'unlocked' : ''} ${isCurrent ? 'current' : ''}">
           <div class="stage-number-bubble">${st.stage}</div>
           <div class="stage-info">
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 2px;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
               <h4 class="stage-title">${st.title}</h4>
-              ${isCurrent ? '<span style="font-size: 10px; font-weight:800; background:rgba(249,115,22,0.2); color:#f97316; padding:2px 6px; border-radius:6px;">Current Form</span>' : ''}
+              ${isCurrent ? '<span style="font-size: 10px; font-weight: 900; background: #de5b1b; color: #ffffff; border: 1px solid #141210; padding: 2px 8px; border-radius: 4px; box-shadow: 1px 1px 0px #141210; text-transform: uppercase;">Current Form</span>' : ''}
             </div>
             <p class="stage-desc">${st.desc}</p>
           </div>
-          <div style="font-size: 12px; font-weight: 800; color: ${isUnlocked ? '#10b981' : '#64748b'};">
-            ${isUnlocked ? 'Unlocked ✓' : `Requires Lv. ${st.minLevel}`}
+          <div>
+            ${isUnlocked ? '<span style="font-size: 11px; font-weight: 900; background: #eaf5ec; color: #15803d; border: 1.5px solid #15803d; padding: 4px 10px; border-radius: 6px;">Unlocked ✓</span>' : `<span style="font-size: 12px; font-weight: 800; color: #71675c;">Requires Lv. ${st.minLevel}</span>`}
           </div>
         </div>
       `;
@@ -373,13 +381,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (badge) {
       badge.textContent = access.progressText;
       if (access.allowed) {
-        badge.style.background = 'rgba(16, 185, 129, 0.15)';
-        badge.style.color = '#34d399';
-        badge.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+        badge.style.background = '#eaf5ec';
+        badge.style.color = '#15803d';
+        badge.style.border = '1.5px solid #15803d';
       } else {
-        badge.style.background = 'rgba(239, 68, 68, 0.15)';
-        badge.style.color = '#f87171';
-        badge.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+        badge.style.background = '#fef2f2';
+        badge.style.color = '#b91c1c';
+        badge.style.border = '1.5px solid #b91c1c';
       }
     }
 
