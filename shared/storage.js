@@ -27,14 +27,14 @@
 
     // Companion State
     companion: {
-      name: 'Sage',
+      name: 'Ignis',
       level: 1,
       exp: 0,
       expToNext: 100,
       skin: 'ember', // 'ember' | 'frost' | 'dragon' | 'void'
       hat: 'none', // 'none' | 'glasses' | 'wizard' | 'crown' | 'headphones'
       aura: 'none', // 'none' | 'sparkle' | 'matrix' | 'zen'
-      evolutionStage: 1 // 1: Neophyte, 2: Scholar, 3: Guardian, 4: Sage
+      evolutionStage: 1 // 1: Hatchling, 2: Apprentice, 3: Guardian, 4: Celestial
     },
 
     // Unlocked Cosmetics Inventory
@@ -80,7 +80,7 @@
     { id: 'hat_headphones', type: 'hat', name: 'Cyber Headphones', price: 75, desc: 'Blocks out all digital noise.', icon: '🎧' },
 
     // Companion Skins
-    { id: 'skin_ember', type: 'skin', name: 'Golden Sage', price: 0, desc: 'Enlightened ancient gilt bronze deity of focus.', icon: '🪷' },
+    { id: 'skin_ember', type: 'skin', name: 'Ignis Ember', price: 0, desc: 'Warm living flame of motivation.', icon: '🔥' },
     { id: 'skin_frost', type: 'skin', name: 'Cryo Frost', price: 80, desc: 'Calm and collected ice elemental.', icon: '❄️' },
     { id: 'skin_dragon', type: 'skin', name: 'Jade Drake', price: 150, desc: 'Ancient guardian of knowledge.', icon: '🐲' },
     { id: 'skin_void', type: 'skin', name: 'Astral Void', price: 200, desc: 'Mystical cosmic spirit of eternity.', icon: '🌌' },
@@ -92,10 +92,10 @@
   ];
 
   const EVOLUTION_STAGES = [
-    { stage: 1, minLevel: 1, title: 'Golden Neophyte', desc: 'Awakening mindfulness and eager to study.' },
+    { stage: 1, minLevel: 1, title: 'Flame Sprout', desc: 'Curious and eager to study.' },
     { stage: 2, minLevel: 5, title: 'Adept Scholar', desc: 'Can focus for hours without wavering.' },
-    { stage: 3, minLevel: 10, title: 'Guardian Protector', desc: 'Shields you from the temptations of doom-scrolling.' },
-    { stage: 4, minLevel: 20, title: 'Celestial Sage', desc: 'Transcended into pure mastery and enlightenment.' }
+    { stage: 3, minLevel: 10, title: 'Guardian Phoenix', desc: 'Shields you from the temptations of doom-scrolling.' },
+    { stage: 4, minLevel: 20, title: 'Celestial Sage', desc: 'Transcended into pure mastery.' }
   ];
 
   function isExtensionContextValid() {
