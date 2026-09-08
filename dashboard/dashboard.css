@@ -333,115 +333,105 @@ body {
 }
 
 /* ==========================================================================
-   THE WAVY SCALLOPED ROSETTE CLOCK WIDGET
-   Matches the 12-lobed wavy clock from the user's reference image
+   Sleek Circular Glass Progress Timer
    ========================================================================== */
-.wavy-clock-pod {
+.hub-timer-circle-pod {
   position: relative;
   width: 230px;
   height: 230px;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: 12px 0 20px 0;
-}
-
-.wavy-rosette-disc {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  margin: 12px 0 24px 0;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.55), rgba(255, 245, 230, 0.25));
+  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.40), rgba(255, 246, 230, 0.15));
   backdrop-filter: blur(16px) saturate(140%);
   -webkit-backdrop-filter: blur(16px) saturate(140%);
-  border: 2px solid rgba(255, 255, 255, 0.75);
-  box-shadow: 0 14px 36px rgba(204, 77, 68, 0.16), inset 0 2px 5px rgba(255, 255, 255, 0.85), inset 0 -4px 10px rgba(204, 77, 68, 0.08);
-  filter: none;
+  border: 1.5px solid rgba(255, 255, 255, 0.65);
+  box-shadow: 0 16px 38px rgba(60, 30, 15, 0.10), inset 0 2px 4px rgba(255, 255, 255, 0.8), inset 0 -3px 8px rgba(204, 77, 68, 0.05);
   animation: wavyGentlyBreathe 5s infinite ease-in-out;
 }
 
 @keyframes wavyGentlyBreathe {
   0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.025); }
+  50% { transform: scale(1.02); }
 }
 
-/* Angled Coral Clock Hands Matching User Image */
-.wavy-clock-hands {
+.timer-progress-svg {
   position: absolute;
   inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+  pointer-events: none;
+}
+
+.timer-ring-track {
+  fill: none;
+  stroke: rgba(204, 77, 68, 0.12);
+  stroke-width: 6;
+}
+
+.timer-ring-progress {
+  fill: none;
+  stroke: url(#timer-coral-grad);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 596.9;
+  stroke-dashoffset: 0;
+  filter: drop-shadow(0 0 5px rgba(239, 68, 68, 0.45));
+  transition: stroke-dashoffset 0.5s ease;
+}
+
+.hub-timer-inner {
+  position: relative;
+  z-index: 2;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  pointer-events: none;
-  z-index: 2;
-  opacity: 0.85;
 }
 
-.wavy-hand-hour {
-  position: absolute;
-  width: 9px;
-  height: 52px;
-  background: var(--coral-primary);
-  border-radius: 9999px;
-  transform-origin: 50% 100%;
-  transform: translateY(-26px) rotate(45deg);
-  box-shadow: 0 4px 10px rgba(204, 77, 68, 0.3);
-  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.wavy-hand-minute {
-  position: absolute;
-  width: 9px;
-  height: 74px;
-  background: var(--coral-primary);
-  border-radius: 9999px;
-  transform-origin: 50% 100%;
-  transform: translateY(-37px) rotate(125deg);
-  box-shadow: 0 4px 10px rgba(204, 77, 68, 0.3);
-  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.wavy-hand-pivot {
-  position: absolute;
-  width: 14px;
-  height: 14px;
-  background: var(--coral-primary);
-  border-radius: 50%;
-  box-shadow: 0 2px 8px rgba(204, 77, 68, 0.4);
-  z-index: 3;
-}
-
-/* Digital Clock Numbers inside the Wavy Rosette */
 .hub-timer-clock {
-  position: relative;
-  z-index: 4;
   font-size: 52px;
   font-weight: 900;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   letter-spacing: -1.5px;
   color: #000000;
-  margin-top: 14px;
-  background: rgba(255, 255, 255, 0.60);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  filter: drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.95)) drop-shadow(0 6px 20px rgba(45, 30, 25, 0.08));
-  padding: 8px 30px;
+  background: transparent;
   border: none;
+  box-shadow: none;
+  filter: none;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+}
+
+.hub-timer-sublabel {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--coral-primary);
+  margin-top: 6px;
+  opacity: 0.9;
 }
 
 .hub-timer-phase {
-  font-size: 13px;
+  font-size: 11.5px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  color: var(--coral-primary);
-  background: var(--coral-light);
-  filter: drop-shadow(0 0 1.5px rgba(204, 77, 68, 0.4));
-  padding: 8px 24px;
-  margin-bottom: 26px;
-  border: none;
+  color: var(--color-charcoal);
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  border-radius: 9999px;
+  box-shadow: 0 2px 8px rgba(60, 30, 15, 0.04);
+  padding: 6px 22px;
+  margin-bottom: 24px;
+  filter: none;
 }
 
 .hub-controls-row {
@@ -1435,11 +1425,10 @@ body {
 }
 
 .hub-timer-clock {
-  border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.88);
-  border: 1.5px solid rgba(255, 255, 255, 0.95);
-  box-shadow: 0 8px 24px rgba(60, 30, 10, 0.08), inset 0 1px 2px rgba(255, 255, 255, 1);
-  padding: 8px 36px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
   filter: none;
 }
 

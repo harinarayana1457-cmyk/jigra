@@ -153,13 +153,29 @@ document.addEventListener('DOMContentLoaded', async () => {
   function updateHubClock() {
     if (!appData) return;
     const remaining = getCalculatedRemaining();
-    hubClockDisplay.textContent = formatTime(remaining);
+    if (hubClockDisplay) hubClockDisplay.textContent = formatTime(remaining);
 
-    // Update angled clock hands rotation inside wavy rosette
     const { timer } = appData;
     const totalSecs = timer.mode === 'ultra' ? 3000 : (timer.mode === 'focus' ? 2700 : 1500);
     const progress = Math.max(0, Math.min(1, (totalSecs - remaining) / totalSecs));
 
+    // Update circular progress ring
+    const ringProgress = document.getElementById('timer-ring-progress');
+    if (ringProgress) {
+      const circumference = 2 * Math.PI * 95; // 596.90
+      const offset = circumference * (1 - progress);
+      ringProgress.style.strokeDashoffset = offset;
+    }
+
+    const sublabel = document.getElementById('hub-timer-sublabel');
+    if (sublabel) {
+      if (timer.state === 'FOCUS') sublabel.textContent = 'FOCUS SPRINT';
+      else if (timer.state === 'BREAK') sublabel.textContent = 'MICRO BREAK';
+      else if (timer.state === 'PAUSED') sublabel.textContent = 'PAUSED';
+      else sublabel.textContent = 'READY';
+    }
+
+    // Fallback checks for clock hands if present
     const hourHand = document.querySelector('.wavy-hand-hour');
     const minHand = document.querySelector('.wavy-hand-minute');
     if (hourHand) {
@@ -189,9 +205,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       hubPhaseLabel.style.background = 'rgba(180, 83, 9, 0.12)';
     } else {
       hubPhaseLabel.textContent = 'Ready to Focus';
-      hubPhaseLabel.style.color = '#726760';
-      hubPhaseLabel.style.borderColor = 'rgba(114, 103, 96, 0.2)';
-      hubPhaseLabel.style.background = 'rgba(114, 103, 96, 0.08)';
+      hubPhaseLabel.style.color = '#141210';
+      hubPhaseLabel.style.borderColor = 'rgba(255, 255, 255, 0.65)';
+      hubPhaseLabel.style.background = 'rgba(255, 255, 255, 0.45)';
     }
   }
 

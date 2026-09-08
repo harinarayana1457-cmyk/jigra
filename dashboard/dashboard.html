@@ -72,16 +72,23 @@
             <button class="hub-mode-btn" data-mode="ultra">Ultra (50m)</button>
           </div>
 
-          <!-- Wavy Scalloped Clock Widget matching user reference -->
-          <div class="wavy-clock-pod">
-            <div class="wavy-rosette-disc">
-              <div class="wavy-clock-hands" id="wavy-clock-hands">
-                <div class="wavy-hand-hour"></div>
-                <div class="wavy-hand-minute"></div>
-                <div class="wavy-hand-pivot"></div>
-              </div>
+          <!-- Sleek Circular Glass Progress Timer -->
+          <div class="hub-timer-circle-pod" id="hub-timer-pod">
+            <svg class="timer-progress-svg" viewBox="0 0 220 220">
+              <defs>
+                <linearGradient id="timer-coral-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#fb923c" />
+                  <stop offset="50%" stop-color="#ef4444" />
+                  <stop offset="100%" stop-color="#cc4d44" />
+                </linearGradient>
+              </defs>
+              <circle class="timer-ring-track" cx="110" cy="110" r="95" />
+              <circle class="timer-ring-progress" id="timer-ring-progress" cx="110" cy="110" r="95" />
+            </svg>
+            <div class="hub-timer-inner">
+              <div class="hub-timer-clock" id="hub-clock-display">25:00</div>
+              <div class="hub-timer-sublabel" id="hub-timer-sublabel">FOCUS SPRINT</div>
             </div>
-            <div class="hub-timer-clock" id="hub-clock-display">25:00</div>
           </div>
 
           <div class="hub-timer-phase" id="hub-phase-label">Ready to Focus</div>
