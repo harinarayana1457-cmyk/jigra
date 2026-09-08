@@ -123,8 +123,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
 
-    if (tabId === 'arcade' && !currentGameInstance) {
-      launchMiniGame(activeGame);
+    if (tabId === 'arcade') {
+      if (!currentGameInstance) {
+        launchMiniGame(activeGame);
+      }
+    } else {
+      if (currentGameInstance && currentGameInstance.destroy) {
+        currentGameInstance.destroy();
+        currentGameInstance = null;
+      }
     }
   }
 
@@ -454,10 +461,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     arcadeArena.innerHTML = '';
 
     const onGameFinish = async () => {
-      await JigraStorage.recordGamePlayed();
-      appData = await JigraStorage.get();
-      renderArcadeIntervals();
-      await chrome.runtime.sendMessage({ type: 'RESUME_OR_START_NEXT_SPRINT' });
+      try {
+        await JigraStorage.recordGamePlayed();
+        appData = await JigraStorage.get();
+        renderArcadeIntervals();
+        renderWalletAndMetrics();
+        renderHeader();
+      } catch (e) {
+        console.warn('Error recording game played:', e);
+      }
+
+      try {
+        if (typeof chrome !== 'undefined' && chrome?.runtime?.id) {
+          await chrome.runtime.sendMessage({ type: 'RESUME_OR_START_NEXT_SPRINT' });
+        }
+      } catch (e) {
+        console.warn('Error resuming next sprint:', e);
+      }
+
+      // Return player to Focus Hub
+      switchTab('focus-hub');
     };
 
     if (gameName === 'memory') {

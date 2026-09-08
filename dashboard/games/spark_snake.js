@@ -124,8 +124,10 @@
     spawnFood() {
       let valid = false;
       let newFood = { x: 0, y: 0, isBonus: false };
+      let attempts = 0;
 
-      while (!valid) {
+      while (!valid && attempts < 500) {
+        attempts++;
         newFood.x = Math.floor(Math.random() * this.cols);
         newFood.y = Math.floor(Math.random() * this.rows);
 
@@ -224,12 +226,24 @@
         this.score += pts;
 
         // Sound & audio
-        if (typeof JigraAudio !== 'undefined') {
-          if (this.food.isBonus) {
-            JigraAudio.playSuccess();
-          } else {
-            JigraAudio.playClick();
+        try {
+          if (typeof JigraAudio !== 'undefined') {
+            if (this.food.isBonus) {
+              if (typeof JigraAudio.playSuccess === 'function') {
+                JigraAudio.playSuccess();
+              } else if (typeof JigraAudio.playCardMatch === 'function') {
+                JigraAudio.playCardMatch();
+              } else if (typeof JigraAudio.playClick === 'function') {
+                JigraAudio.playClick();
+              }
+            } else {
+              if (typeof JigraAudio.playClick === 'function') {
+                JigraAudio.playClick();
+              }
+            }
           }
+        } catch (e) {
+          // Audio error must not stop the game loop
         }
 
         // Particle burst
@@ -442,6 +456,11 @@
       }
       if (btnDone) {
         btnDone.textContent = `Back to Focus (+${sparksEarned} ✨)`;
+        btnDone.onclick = (e) => {
+          if (e) e.preventDefault();
+          if (modal) modal.style.display = 'none';
+          if (this.onFinish) this.onFinish();
+        };
       }
 
       if (modal) modal.style.display = 'flex';

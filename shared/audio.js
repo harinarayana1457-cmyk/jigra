@@ -170,6 +170,31 @@
       osc.stop(ctx.currentTime + 0.15);
     },
 
+    // Spark / bonus success chime
+    playSuccess() {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+
+      const notes = [587.33, 739.99, 880]; // D5, F#5, A5
+      const now = ctx.currentTime;
+      notes.forEach((f, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(f, now + i * 0.06);
+
+        gain.gain.setValueAtTime(0.18, now + i * 0.06);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.06 + 0.16);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(now + i * 0.06);
+        osc.stop(now + i * 0.06 + 0.16);
+      });
+    },
+
     // Gentle 2-tone melodic nudge chime when avatar reminds user to return to studying
     playNudge() {
       const ctx = getAudioContext();
