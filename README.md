@@ -1,7 +1,7 @@
 <div align="center">
 
-# ⚡ JIGRA
-### Gamified Focus Companion, YouTube Study Shield & Micro-Break Brain Reset Engine
+# ⚡ jigra — Focus Companion, YouTube Doom-Scroll Shield & Micro-Break Arcade
+### Gamified Productivity Extension Built with Chrome Extension MV3, Isolated Shadow DOM & Procedural Web Audio
 
 [![Platform](https://img.shields.io/badge/Platform-Chrome%20Extension%20MV3-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white)](https://developer.chrome.com/docs/extensions/mv3/intro/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6%2B%20Vanilla-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
