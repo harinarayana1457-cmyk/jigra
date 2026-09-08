@@ -60,10 +60,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (e) {}
     appData = await JigraStorage.get();
 
-    // Check URL hash for tab navigation (e.g. #bazaar, #evolution)
-    const hash = window.location.hash.replace('#', '');
-    if (hash && ['focus-hub', 'bazaar', 'evolution', 'arcade'].includes(hash)) {
-      switchTab(hash);
+    // Check URL hash for tab navigation (e.g. #bazaar, #evolution, #arcade:snake)
+    const rawHash = window.location.hash.replace('#', '');
+    if (rawHash) {
+      const [tab, subGame] = rawHash.split(':');
+      if (subGame && ['memory', 'typer', 'snake'].includes(subGame)) {
+        activeGame = subGame;
+        gameTabButtons.forEach((b) => {
+          if (b.dataset.game === subGame) b.classList.add('active');
+          else b.classList.remove('active');
+        });
+      }
+      if (['focus-hub', 'bazaar', 'evolution', 'arcade'].includes(tab)) {
+        switchTab(tab);
+      }
     }
 
     renderAllViews();
@@ -454,6 +464,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       currentGameInstance = new MemoryMatchGame(arcadeArena, onGameFinish);
     } else if (gameName === 'typer') {
       currentGameInstance = new SpeedTyperGame(arcadeArena, onGameFinish);
+    } else if (gameName === 'snake') {
+      currentGameInstance = new SparkSnakeGame(arcadeArena, onGameFinish);
     }
   }
 
