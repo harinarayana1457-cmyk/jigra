@@ -85,8 +85,6 @@ body {
   background: rgba(255, 246, 228, 0.28);
   backdrop-filter: blur(20px) saturate(160%) brightness(1.05);
   -webkit-backdrop-filter: blur(20px) saturate(160%) brightness(1.05);
-  clip-path: url(#wavy-sidebar-clip);
-  -webkit-clip-path: url(#wavy-sidebar-clip);
   filter: drop-shadow(0 0 1.5px rgba(255, 230, 180, 0.80)) drop-shadow(0 16px 36px rgba(80, 40, 15, 0.14));
   margin: 18px 0 18px 18px;
   height: calc(100vh - 36px);
@@ -111,8 +109,6 @@ body {
 .brand-icon {
   width: 42px;
   height: 42px;
-  clip-path: url(#wavy-subcard-clip);
-  -webkit-clip-path: url(#wavy-subcard-clip);
   box-shadow: 0 6px 16px rgba(204, 77, 68, 0.25);
 }
 
@@ -129,8 +125,6 @@ body {
   color: #ffffff;
   background: var(--coral-primary);
   padding: 3px 8px;
-  clip-path: url(#wavy-pill-clip);
-  -webkit-clip-path: url(#wavy-pill-clip);
   margin-left: 6px;
   letter-spacing: 0.5px;
 }
@@ -148,8 +142,6 @@ body {
   align-items: center;
   gap: 12px;
   padding: 13px 22px;
-  clip-path: url(#wavy-pill-clip);
-  -webkit-clip-path: url(#wavy-pill-clip);
   color: var(--color-muted);
   font-size: 14px;
   font-weight: 700;
@@ -181,8 +173,6 @@ body {
   background: var(--bg-glass-subcard);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  clip-path: url(#wavy-subcard-clip);
-  -webkit-clip-path: url(#wavy-subcard-clip);
   filter: drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.95)) drop-shadow(0 8px 24px rgba(45, 30, 25, 0.05));
   padding: 22px 24px;
   display: flex;
@@ -251,8 +241,6 @@ body {
   background: rgba(255, 246, 225, 0.32);
   backdrop-filter: blur(18px) saturate(150%) brightness(1.06);
   -webkit-backdrop-filter: blur(18px) saturate(150%) brightness(1.06);
-  clip-path: url(#wavy-banner-clip);
-  -webkit-clip-path: url(#wavy-banner-clip);
   filter: drop-shadow(0 0 1.5px rgba(255, 228, 175, 0.70)) drop-shadow(0 14px 32px rgba(80, 40, 15, 0.12));
   padding: 30px 48px;
   margin-bottom: 30px;
@@ -279,8 +267,6 @@ body {
   background: rgba(255, 247, 230, 0.28);
   backdrop-filter: blur(18px) saturate(150%) brightness(1.06);
   -webkit-backdrop-filter: blur(18px) saturate(150%) brightness(1.06);
-  clip-path: url(#wavy-card-clip);
-  -webkit-clip-path: url(#wavy-card-clip);
   filter: drop-shadow(0 0 1.5px rgba(255, 228, 175, 0.65)) drop-shadow(0 16px 36px rgba(80, 40, 15, 0.12));
   padding: 36px 40px;
   transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -315,8 +301,6 @@ body {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   padding: 8px 14px;
-  clip-path: url(#wavy-pill-clip);
-  -webkit-clip-path: url(#wavy-pill-clip);
   filter: drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.95)) drop-shadow(0 4px 16px rgba(45, 30, 25, 0.04));
   margin-bottom: 24px;
   width: 100%;
@@ -333,8 +317,6 @@ body {
   color: var(--color-muted);
   font-weight: 700;
   font-size: 13px;
-  clip-path: url(#wavy-pill-clip);
-  -webkit-clip-path: url(#wavy-pill-clip);
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -370,8 +352,6 @@ body {
   inset: 0;
   width: 100%;
   height: 100%;
-  clip-path: url(#wavy-scallop-clip);
-  -webkit-clip-path: url(#wavy-scallop-clip);
   background: var(--bg-glass-rosette);
   backdrop-filter: blur(10px) saturate(125%);
   -webkit-backdrop-filter: blur(10px) saturate(125%);
@@ -444,8 +424,6 @@ body {
   background: rgba(255, 255, 255, 0.60);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  clip-path: url(#wavy-pill-clip);
-  -webkit-clip-path: url(#wavy-pill-clip);
   filter: drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.95)) drop-shadow(0 6px 20px rgba(45, 30, 25, 0.08));
   padding: 8px 30px;
   border: none;
@@ -458,8 +436,6 @@ body {
   letter-spacing: 1.5px;
   color: var(--coral-primary);
   background: var(--coral-light);
-  clip-path: url(#wavy-pill-clip);
-  -webkit-clip-path: url(#wavy-pill-clip);
   filter: drop-shadow(0 0 1.5px rgba(204, 77, 68, 0.4));
   padding: 8px 24px;
   margin-bottom: 26px;
@@ -479,8 +455,6 @@ body {
   color: #ffffff;
   border: none;
   padding: 16px 28px;
-  clip-path: url(#wavy-pill-clip);
-  -webkit-clip-path: url(#wavy-pill-clip);
   filter: drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.95)) drop-shadow(0 8px 24px rgba(204, 77, 68, 0.35));
   font-size: 16px;
   font-weight: 800;
@@ -502,8 +476,6 @@ body {
   -webkit-backdrop-filter: blur(10px);
   color: var(--color-charcoal);
   padding: 16px 22px;
-  clip-path: url(#wavy-pill-clip);
-  -webkit-clip-path: url(#wavy-pill-clip);
   filter: drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.95)) drop-shadow(0 6px 20px rgba(45, 30, 25, 0.06));
   font-size: 14px;
   font-weight: 700;
@@ -529,8 +501,6 @@ body {
   background: rgba(255, 246, 224, 0.34);
   backdrop-filter: blur(18px) saturate(155%) brightness(1.06);
   -webkit-backdrop-filter: blur(18px) saturate(155%) brightness(1.06);
-  clip-path: url(#wavy-subcard-clip);
-  -webkit-clip-path: url(#wavy-subcard-clip);
   filter: drop-shadow(0 0 1.5px rgba(255, 225, 165, 0.65)) drop-shadow(0 10px 24px rgba(80, 40, 15, 0.09));
   padding: 24px 26px;
   display: flex;
@@ -616,8 +586,6 @@ body {
   -webkit-backdrop-filter: blur(10px);
   color: var(--color-muted);
   padding: 10px 22px;
-  clip-path: url(#wavy-pill-clip);
-  -webkit-clip-path: url(#wavy-pill-clip);
   filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.9)) drop-shadow(0 4px 14px rgba(45, 30, 25, 0.04));
   font-size: 13px;
   font-weight: 700;
@@ -650,8 +618,6 @@ body {
   background: rgba(255, 246, 224, 0.30);
   backdrop-filter: blur(18px) saturate(150%) brightness(1.05);
   -webkit-backdrop-filter: blur(18px) saturate(150%) brightness(1.05);
-  clip-path: url(#wavy-subcard-clip);
-  -webkit-clip-path: url(#wavy-subcard-clip);
   filter: drop-shadow(0 0 1.5px rgba(255, 225, 165, 0.65)) drop-shadow(0 12px 30px rgba(80, 40, 15, 0.10));
   padding: 28px;
   display: flex;
@@ -734,8 +700,6 @@ body {
 
 .btn-item-action {
   padding: 10px 22px;
-  clip-path: url(#wavy-pill-clip);
-  -webkit-clip-path: url(#wavy-pill-clip);
   font-size: 12px;
   font-weight: 800;
   cursor: pointer;
@@ -811,8 +775,6 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  clip-path: url(#wavy-scallop-clip);
-  -webkit-clip-path: url(#wavy-scallop-clip);
   background: var(--bg-glass-rosette);
   backdrop-filter: blur(10px) saturate(125%);
   -webkit-backdrop-filter: blur(10px) saturate(125%);
@@ -855,8 +817,6 @@ body {
   -webkit-backdrop-filter: blur(8px);
   color: var(--color-muted);
   padding: 8px 18px;
-  clip-path: url(#wavy-pill-clip);
-  -webkit-clip-path: url(#wavy-pill-clip);
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
@@ -882,8 +842,6 @@ body {
   background: var(--bg-glass-card);
   backdrop-filter: blur(10px) saturate(125%);
   -webkit-backdrop-filter: blur(10px) saturate(125%);
-  clip-path: url(#wavy-subcard-clip);
-  -webkit-clip-path: url(#wavy-subcard-clip);
   filter: drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.95)) drop-shadow(0 10px 24px rgba(45, 30, 25, 0.06));
   padding: 24px 34px;
   display: flex;
@@ -954,8 +912,6 @@ body {
   -webkit-backdrop-filter: blur(10px);
   color: var(--color-muted);
   padding: 12px 24px;
-  clip-path: url(#wavy-pill-clip);
-  -webkit-clip-path: url(#wavy-pill-clip);
   font-size: 14px;
   font-weight: 800;
   cursor: pointer;
@@ -978,8 +934,6 @@ body {
   background: var(--bg-glass-card);
   backdrop-filter: blur(10px) saturate(125%);
   -webkit-backdrop-filter: blur(10px) saturate(125%);
-  clip-path: url(#wavy-card-clip);
-  -webkit-clip-path: url(#wavy-card-clip);
   filter: drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.95)) drop-shadow(0 16px 36px rgba(35, 20, 15, 0.10));
   padding: 42px;
   min-height: 480px;
@@ -1009,8 +963,6 @@ body {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   padding: 14px 34px;
-  clip-path: url(#wavy-pill-clip);
-  -webkit-clip-path: url(#wavy-pill-clip);
   filter: drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.95)) drop-shadow(0 6px 18px rgba(45, 30, 25, 0.04));
   border: none;
 }
@@ -1079,8 +1031,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  clip-path: url(#wavy-subcard-clip);
-  -webkit-clip-path: url(#wavy-subcard-clip);
   font-size: 32px;
   border: none;
   filter: drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.95)) drop-shadow(0 8px 22px rgba(45, 30, 25, 0.06));
@@ -1109,8 +1059,6 @@ body {
   background: rgba(255, 255, 255, 0.36);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  clip-path: url(#wavy-card-clip);
-  -webkit-clip-path: url(#wavy-card-clip);
   filter: drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.95)) drop-shadow(0 8px 24px rgba(45, 30, 25, 0.05));
   padding: 30px 38px;
   font-size: 20px;
@@ -1154,8 +1102,6 @@ body {
   background: rgba(255, 255, 255, 0.48);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  clip-path: url(#wavy-pill-clip);
-  -webkit-clip-path: url(#wavy-pill-clip);
   filter: drop-shadow(0 0 2px rgba(204, 77, 68, 0.5)) drop-shadow(0 8px 24px rgba(45, 30, 25, 0.05));
   padding: 16px 28px;
   font-size: 16px;
@@ -1359,3 +1305,40 @@ body {
 }
 
 
+
+/* ==========================================================================
+   Square Widget Overrides - Clean Rounded Rectangles
+   ========================================================================== */
+.sidebar                { border-radius: 20px; box-shadow: 0 8px 32px rgba(80,40,15,0.14); }
+.wallet-box             { border-radius: 16px; box-shadow: 0 4px 16px rgba(80,40,15,0.08); }
+.brand-icon             { border-radius: 12px; }
+.brand-tag              { border-radius: 6px; }
+
+.nav-item               { border-radius: 12px; }
+.nav-item:hover         { filter: none; }
+.nav-item.active        { filter: none; box-shadow: 0 4px 14px rgba(204,77,68,0.30); }
+
+.pane-header            { border-radius: 20px; box-shadow: 0 6px 24px rgba(80,40,15,0.10); }
+
+.card                   { border-radius: 20px; box-shadow: 0 8px 28px rgba(80,40,15,0.12); }
+.card:hover             { filter: none; box-shadow: 0 16px 40px rgba(80,40,15,0.18); }
+
+.stat-metric-card       { border-radius: 16px; box-shadow: 0 4px 18px rgba(80,40,15,0.09); }
+.stat-metric-card:hover { filter: none; box-shadow: 0 10px 28px rgba(80,40,15,0.14); }
+
+.hub-timer-modes        { border-radius: 14px; box-shadow: 0 2px 10px rgba(80,40,15,0.06); }
+.hub-mode-btn           { border-radius: 10px; }
+.hub-timer-clock        { border-radius: 16px; box-shadow: 0 4px 18px rgba(80,40,15,0.08); }
+.hub-timer-phase        { border-radius: 10px; filter: none; }
+
+.btn-hub-primary        { border-radius: 14px; filter: none; box-shadow: 0 6px 20px rgba(204,77,68,0.32); }
+.btn-hub-primary:hover  { filter: none; box-shadow: 0 10px 28px rgba(204,77,68,0.42); }
+.btn-hub-secondary      { border-radius: 14px; filter: none; box-shadow: 0 3px 12px rgba(80,40,15,0.07); }
+.btn-hub-secondary:hover{ filter: none; box-shadow: 0 6px 20px rgba(80,40,15,0.12); }
+
+.bazaar-item-card       { border-radius: 18px; box-shadow: 0 6px 22px rgba(80,40,15,0.10); }
+.bazaar-item-card:hover { filter: none; box-shadow: 0 14px 36px rgba(80,40,15,0.16); }
+
+.filter-btn             { border-radius: 10px; filter: none; box-shadow: 0 2px 8px rgba(80,40,15,0.06); }
+.filter-btn:hover       { filter: none; box-shadow: 0 4px 14px rgba(80,40,15,0.10); }
+.filter-btn.active      { filter: none; box-shadow: 0 4px 14px rgba(204,77,68,0.32); }
