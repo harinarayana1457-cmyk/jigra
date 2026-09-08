@@ -10,7 +10,34 @@
   <!-- Sidebar Navigation -->
   <aside class="sidebar">
     <div class="brand-section">
-      <img src="../icons/icon48.png" alt="Jigra Logo" class="brand-icon">
+      <div class="brand-icon-wrapper" aria-label="Jigra Logo">
+        <svg viewBox="0 0 108 108" width="36" height="36" class="brand-logo-svg">
+          <defs>
+            <radialGradient id="brand-flame-glow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="rgba(255, 87, 34, 0.40)" />
+              <stop offset="100%" stop-color="rgba(255, 87, 34, 0)" />
+            </radialGradient>
+            <linearGradient id="brand-flame-body" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#ff9800" />
+              <stop offset="100%" stop-color="#ff5722" />
+            </linearGradient>
+            <linearGradient id="brand-flame-core" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#fff176" />
+              <stop offset="100%" stop-color="#ffb74d" />
+            </linearGradient>
+          </defs>
+          <circle cx="54" cy="54" r="50" fill="url(#brand-flame-glow)" />
+          <path d="M 54 14 C 70 32, 86 46, 86 66 C 86 82, 72 92, 54 92 C 36 92, 22 82, 22 66 C 22 46, 38 32, 54 14 Z" fill="url(#brand-flame-body)" />
+          <path d="M 54 32 C 63 44, 72 54, 72 68 C 72 80, 63 85, 54 85 C 45 85, 36 80, 36 68 C 36 54, 45 44, 54 32 Z" fill="url(#brand-flame-core)" />
+          <ellipse cx="43" cy="58" rx="3.5" ry="5.5" fill="#1f2937" />
+          <ellipse cx="65" cy="58" rx="3.5" ry="5.5" fill="#1f2937" />
+          <circle cx="42" cy="56" r="1.6" fill="#ffffff" />
+          <circle cx="64" cy="56" r="1.6" fill="#ffffff" />
+          <circle cx="44" cy="60" r="0.8" fill="#ffffff" />
+          <circle cx="66" cy="60" r="0.8" fill="#ffffff" />
+          <path d="M 51 65 Q 54 68 57 65" stroke="#1f2937" stroke-width="2" fill="none" stroke-linecap="round" />
+        </svg>
+      </div>
       <div>
         <span class="brand-title">Jigra</span>
         <span class="brand-tag">PRO</span>
