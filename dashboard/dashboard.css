@@ -1,22 +1,22 @@
 /* ==========================================================================
-   Jigra Dashboard Styles - Wavy Scalloped Rosette & Organic Pebble Aesthetic
-   Inspired by Android Material You Wavy Clock and Frosted Organic Widgets
+   Jigra Dashboard Styles - Smooth Organic Blob Aesthetic
+   Warm Glassmorphism complementing the earthy classical painting background
    ========================================================================== */
 
 :root {
-  /* Ultra-Curvy Transparent Glassmorphism Palette */
-  --bg-paper: #f2ece1;
-  --bg-glass-card: rgba(255, 255, 255, 0.22);
-  --bg-glass-hover: rgba(255, 255, 255, 0.36);
-  --bg-glass-subcard: rgba(255, 255, 255, 0.26);
-  --bg-glass-inset: rgba(255, 255, 255, 0.16);
-  --bg-glass-rosette: rgba(255, 248, 242, 0.28);
+  /* Warm Amber Glassmorphism Palette — complements the earthy painting */
+  --bg-paper: #f0e6d2;
+  --bg-glass-card: rgba(255, 248, 235, 0.30);
+  --bg-glass-hover: rgba(255, 248, 235, 0.48);
+  --bg-glass-subcard: rgba(255, 245, 228, 0.34);
+  --bg-glass-inset: rgba(255, 248, 235, 0.20);
+  --bg-glass-rosette: rgba(255, 248, 235, 0.36);
 
   /* Signature Coral Terracotta & Accent Colors */
   --coral-primary: #cc4d44;
   --coral-hover: #b84139;
   --coral-glow: rgba(204, 77, 68, 0.35);
-  --coral-light: rgba(204, 77, 68, 0.14);
+  --coral-light: rgba(204, 77, 68, 0.12);
 
   --accent-blue: #2b5fa8;
   --accent-emerald: #15803d;
@@ -28,15 +28,15 @@
   --text-muted: #111111;
   --color-white: #ffffff;
 
-  /* Curvy Specular Borders & Soft Elevation */
-  --border-glass: 1.5px solid rgba(255, 255, 255, 0.55);
-  --border-subtle: 1px solid rgba(255, 255, 255, 0.42);
+  /* Warm Specular Borders & Elevation */
+  --border-glass: 1.5px solid rgba(255, 242, 210, 0.65);
+  --border-subtle: 1px solid rgba(255, 240, 205, 0.50);
   --border-coral: 1.5px solid #cc4d44;
 
-  --shadow-organic: 0 16px 40px rgba(35, 20, 15, 0.08), 0 2px 10px rgba(0, 0, 0, 0.03);
-  --shadow-organic-hover: 0 22px 50px rgba(35, 20, 15, 0.14), 0 4px 16px rgba(0, 0, 0, 0.05);
+  --shadow-organic: 0 16px 40px rgba(80, 40, 15, 0.10), 0 2px 10px rgba(60, 30, 10, 0.04);
+  --shadow-organic-hover: 0 22px 50px rgba(80, 40, 15, 0.18), 0 4px 16px rgba(60, 30, 10, 0.07);
   --shadow-coral: 0 8px 24px rgba(204, 77, 68, 0.35);
-  --shadow-rosette: 0 14px 36px rgba(204, 77, 68, 0.20), 0 4px 14px rgba(0, 0, 0, 0.04);
+  --shadow-rosette: 0 14px 36px rgba(204, 77, 68, 0.20), 0 4px 14px rgba(60, 30, 10, 0.05);
 }
 
 * {
@@ -82,12 +82,12 @@ body {
    ========================================================================== */
 .sidebar {
   width: 275px;
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(12px) saturate(130%);
-  -webkit-backdrop-filter: blur(12px) saturate(130%);
+  background: rgba(255, 246, 228, 0.28);
+  backdrop-filter: blur(20px) saturate(160%) brightness(1.05);
+  -webkit-backdrop-filter: blur(20px) saturate(160%) brightness(1.05);
   clip-path: url(#wavy-sidebar-clip);
   -webkit-clip-path: url(#wavy-sidebar-clip);
-  filter: drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.95)) drop-shadow(0 16px 36px rgba(35, 20, 15, 0.12));
+  filter: drop-shadow(0 0 1.5px rgba(255, 230, 180, 0.80)) drop-shadow(0 16px 36px rgba(80, 40, 15, 0.14));
   margin: 18px 0 18px 18px;
   height: calc(100vh - 36px);
   padding: 34px 28px;
@@ -246,14 +246,14 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Page Header Banner - Scalloped Wavy Cloud Ribbon */
+/* Page Header Banner - Smooth Organic Cloud Ribbon */
 .pane-header {
-  background: var(--bg-glass-card);
-  backdrop-filter: blur(10px) saturate(125%);
-  -webkit-backdrop-filter: blur(10px) saturate(125%);
+  background: rgba(255, 246, 225, 0.32);
+  backdrop-filter: blur(18px) saturate(150%) brightness(1.06);
+  -webkit-backdrop-filter: blur(18px) saturate(150%) brightness(1.06);
   clip-path: url(#wavy-banner-clip);
   -webkit-clip-path: url(#wavy-banner-clip);
-  filter: drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.95)) drop-shadow(0 14px 32px rgba(35, 20, 15, 0.10));
+  filter: drop-shadow(0 0 1.5px rgba(255, 228, 175, 0.70)) drop-shadow(0 14px 32px rgba(80, 40, 15, 0.12));
   padding: 30px 48px;
   margin-bottom: 30px;
   display: flex;
@@ -274,21 +274,21 @@ body {
   font-weight: 600;
 }
 
-/* Universal Wavy Scalloped Card - Extra Curvy & Crystal Transparent */
+/* Universal Organic Blob Card - Warm & Crystal Transparent */
 .card {
-  background: var(--bg-glass-card);
-  backdrop-filter: blur(10px) saturate(125%);
-  -webkit-backdrop-filter: blur(10px) saturate(125%);
+  background: rgba(255, 247, 230, 0.28);
+  backdrop-filter: blur(18px) saturate(150%) brightness(1.06);
+  -webkit-backdrop-filter: blur(18px) saturate(150%) brightness(1.06);
   clip-path: url(#wavy-card-clip);
   -webkit-clip-path: url(#wavy-card-clip);
-  filter: drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.95)) drop-shadow(0 16px 36px rgba(35, 20, 15, 0.10));
+  filter: drop-shadow(0 0 1.5px rgba(255, 228, 175, 0.65)) drop-shadow(0 16px 36px rgba(80, 40, 15, 0.12));
   padding: 36px 40px;
   transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .card:hover {
   transform: translateY(-4px);
-  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 1)) drop-shadow(0 22px 46px rgba(35, 20, 15, 0.15));
+  filter: drop-shadow(0 0 2px rgba(255, 228, 175, 0.90)) drop-shadow(0 22px 46px rgba(80, 40, 15, 0.18));
 }
 
 /* ==========================================================================
@@ -526,12 +526,12 @@ body {
 }
 
 .stat-metric-card {
-  background: var(--bg-glass-subcard);
-  backdrop-filter: blur(10px) saturate(125%);
-  -webkit-backdrop-filter: blur(10px) saturate(125%);
+  background: rgba(255, 246, 224, 0.34);
+  backdrop-filter: blur(18px) saturate(155%) brightness(1.06);
+  -webkit-backdrop-filter: blur(18px) saturate(155%) brightness(1.06);
   clip-path: url(#wavy-subcard-clip);
   -webkit-clip-path: url(#wavy-subcard-clip);
-  filter: drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.95)) drop-shadow(0 10px 24px rgba(45, 30, 25, 0.07));
+  filter: drop-shadow(0 0 1.5px rgba(255, 225, 165, 0.65)) drop-shadow(0 10px 24px rgba(80, 40, 15, 0.09));
   padding: 24px 26px;
   display: flex;
   flex-direction: column;
@@ -647,12 +647,12 @@ body {
 }
 
 .bazaar-item-card {
-  background: var(--bg-glass-card);
-  backdrop-filter: blur(10px) saturate(125%);
-  -webkit-backdrop-filter: blur(10px) saturate(125%);
+  background: rgba(255, 246, 224, 0.30);
+  backdrop-filter: blur(18px) saturate(150%) brightness(1.05);
+  -webkit-backdrop-filter: blur(18px) saturate(150%) brightness(1.05);
   clip-path: url(#wavy-subcard-clip);
   -webkit-clip-path: url(#wavy-subcard-clip);
-  filter: drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.95)) drop-shadow(0 12px 30px rgba(35, 20, 15, 0.08));
+  filter: drop-shadow(0 0 1.5px rgba(255, 225, 165, 0.65)) drop-shadow(0 12px 30px rgba(80, 40, 15, 0.10));
   padding: 28px;
   display: flex;
   flex-direction: column;
@@ -661,7 +661,7 @@ body {
 
 .bazaar-item-card:hover {
   transform: translateY(-4px);
-  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 1)) drop-shadow(0 18px 40px rgba(35, 20, 15, 0.14));
+  filter: drop-shadow(0 0 2px rgba(255, 225, 165, 0.90)) drop-shadow(0 18px 40px rgba(80, 40, 15, 0.16));
 }
 
 .item-badge-row {
