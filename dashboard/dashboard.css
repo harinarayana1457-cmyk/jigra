@@ -461,8 +461,15 @@ body {
   filter: drop-shadow(0 0 2px rgba(255, 255, 255, 1)) drop-shadow(0 12px 28px rgba(204, 77, 68, 0.45));
 }
 
-.btn-hub-secondary {
+.hub-controls-row .btn-hub-primary {
+  flex: 2;
+}
+
+.hub-controls-row .btn-hub-secondary {
   flex: 1;
+}
+
+.btn-hub-secondary {
   background: rgba(255, 255, 255, 0.42);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -896,12 +903,21 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 24px;
   margin-bottom: 24px;
+  flex-wrap: wrap;
 }
 
 .arcade-game-tabs {
   display: flex;
-  gap: 12px;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+#btn-restart-game {
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 .game-tab-btn {
