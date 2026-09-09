@@ -248,27 +248,29 @@
   position: absolute;
   bottom: 100%;
   right: 0;
-  margin-bottom: 12px;
-  background: rgba(15, 23, 42, 0.96);
-  backdrop-filter: blur(16px);
+  margin-bottom: 14px;
+  background: rgba(15, 23, 42, 0.97);
+  backdrop-filter: blur(18px);
   color: #f8fafc;
-  border: 1px solid rgba(249, 115, 22, 0.40);
+  border: 1px solid rgba(249, 115, 22, 0.45);
   padding: 12px 16px;
   border-radius: 16px;
   font-size: 12px;
   font-weight: 600;
   line-height: 1.4;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  width: 440px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6), 0 0 16px rgba(249, 115, 22, 0.15);
+  width: 360px;
+  max-width: min(440px, calc(100vw - 32px));
   pointer-events: none;
   opacity: 0;
   transform: translateY(10px) scale(0.9);
-  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: opacity 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
   white-space: normal;
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 14px;
+  z-index: 30;
 }
 
 .jigra-speech-bubble.visible {
@@ -284,7 +286,86 @@
   right: 32px;
   border-width: 6px;
   border-style: solid;
-  border-color: rgba(15, 23, 42, 0.96) transparent transparent transparent;
+  border-color: rgba(15, 23, 42, 0.97) transparent transparent transparent;
+}
+
+/* When HUD is open, position speech bubble cleanly beside the HUD (no overlap) */
+.jigra-companion-root.hud-open .jigra-speech-bubble {
+  right: 316px;
+  bottom: calc(100% + 14px);
+  margin-bottom: 0;
+  width: 340px;
+  max-width: calc(100vw - 350px);
+}
+
+.jigra-companion-root.hud-open .jigra-speech-bubble::after {
+  bottom: 20px;
+  top: auto;
+  right: -12px;
+  left: auto;
+  transform: none;
+  border-width: 6px;
+  border-style: solid;
+  border-color: transparent transparent transparent rgba(15, 23, 42, 0.97);
+}
+
+/* Docked to Left Edge */
+.jigra-companion-root.dock-left .jigra-hud-panel {
+  left: 0;
+  right: auto;
+}
+
+.jigra-companion-root.dock-left .jigra-speech-bubble {
+  left: 0;
+  right: auto;
+}
+
+.jigra-companion-root.dock-left .jigra-speech-bubble::after {
+  left: 32px;
+  right: auto;
+}
+
+.jigra-companion-root.dock-left.hud-open .jigra-speech-bubble {
+  left: 316px;
+  right: auto;
+  bottom: calc(100% + 14px);
+  margin-bottom: 0;
+}
+
+.jigra-companion-root.dock-left.hud-open .jigra-speech-bubble::after {
+  bottom: 20px;
+  top: auto;
+  left: -12px;
+  right: auto;
+  transform: none;
+  border-color: transparent rgba(15, 23, 42, 0.97) transparent transparent;
+}
+
+/* Docked to Top Edge */
+.jigra-companion-root.dock-top .jigra-hud-panel {
+  top: 100%;
+  bottom: auto;
+  margin-top: 14px;
+  margin-bottom: 0;
+}
+
+.jigra-companion-root.dock-top .jigra-speech-bubble {
+  top: 100%;
+  bottom: auto;
+  margin-top: 14px;
+  margin-bottom: 0;
+}
+
+.jigra-companion-root.dock-top .jigra-speech-bubble::after {
+  bottom: 100%;
+  top: auto;
+  border-color: transparent transparent rgba(15, 23, 42, 0.97) transparent;
+}
+
+.jigra-companion-root.dock-top.hud-open .jigra-speech-bubble {
+  top: 14px;
+  bottom: auto;
+  margin-top: 0;
 }
 
 .jigra-bubble-title {
@@ -365,6 +446,7 @@
   flex-direction: column;
   gap: 12px;
   cursor: default;
+  z-index: 20;
 }
 
 .jigra-hud-panel.open {
@@ -501,6 +583,34 @@
 .jigra-interval-select option {
   background: #0f172a;
   color: #f8fafc;
+}
+
+.jigra-interval-select.jigra-pulse-focus {
+  animation: jigraPulseFocus 1.2s ease-in-out;
+}
+
+@keyframes jigraPulseFocus {
+  0% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.85); border-color: #f97316; }
+  50% { box-shadow: 0 0 0 6px rgba(249, 115, 22, 0); border-color: #fb923c; }
+  100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); border-color: rgba(255, 255, 255, 0.12); }
+}
+
+/* In-HUD Alert / Notification Banner */
+.jigra-hud-alert {
+  background: rgba(245, 158, 11, 0.16);
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #fef08a;
+  animation: jigraAlertIn 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes jigraAlertIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* Action Buttons Grid */

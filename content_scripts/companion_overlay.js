@@ -255,14 +255,16 @@
 
   function renderCompanionUI() {
     if (!isContextValid()) return;
+    const wasHUDOpen = shadowRoot?.getElementById('jigra-hud')?.classList.contains('open');
+
     let container = shadowRoot.getElementById('jigra-root');
     if (!container) {
       container = document.createElement('div');
       container.id = 'jigra-root';
-      container.className = `jigra-companion-root state-${currentState}`;
+      container.className = `jigra-companion-root state-${currentState}${wasHUDOpen ? ' hud-open' : ''}`;
       shadowRoot.appendChild(container);
     } else {
-      container.className = `jigra-companion-root state-${currentState}`;
+      container.className = `jigra-companion-root state-${currentState}${wasHUDOpen ? ' hud-open' : ''}`;
     }
 
     const remaining = getRemainingSeconds();
@@ -290,7 +292,7 @@
       <div class="jigra-speech-bubble" id="jigra-bubble"></div>
 
       <!-- Mini HUD Menu -->
-      <div class="jigra-hud-panel" id="jigra-hud">
+      <div class="jigra-hud-panel ${wasHUDOpen ? 'open' : ''}" id="jigra-hud">
         <div class="jigra-hud-header">
           <span class="jigra-hud-title">${companionData.name} • Lv. ${companionData.level}</span>
           <button class="jigra-hud-close" id="jigra-hud-close">✕</button>
@@ -323,6 +325,9 @@
             <option value="anytime" ${intervalMode === 'anytime' ? 'selected' : ''}>Anytime (Free Play)</option>
           </select>
         </div>
+
+        <!-- Inline HUD Alert Notification -->
+        <div class="jigra-hud-alert" id="jigra-hud-alert" style="display: none;"></div>
 
         <!-- Actions Row: Focus, Play Game, Bazaar -->
         <div class="jigra-hud-actions">
@@ -401,7 +406,28 @@
       if (!isContextValid()) return;
       if (!gameAccess.allowed) {
         if (typeof JigraAudio !== 'undefined') JigraAudio.playWarning();
-        showSpeechBubble(`🔒 ${gameAccess.reason} (Tip: Select 'Anytime' above for Free Play!)`, 5000);
+
+        // 1. Show speech bubble positioned cleanly beside the HUD
+        showSpeechBubble(`🔒 ${gameAccess.reason} (Tip: Select 'Anytime' above for Free Play!)`, 6000);
+
+        // 2. Display inline alert inside HUD right between dropdown and button
+        const hudAlert = shadowRoot.getElementById('jigra-hud-alert');
+        if (hudAlert) {
+          hudAlert.innerHTML = `🔒 <strong>${gameAccess.reason}</strong><br><span style="color:#fdba74;">Tip: Switch to <u>Anytime (Free Play)</u> in the dropdown above ☝️</span>`;
+          hudAlert.style.display = 'block';
+          setTimeout(() => {
+            if (hudAlert) hudAlert.style.display = 'none';
+          }, 6000);
+        }
+
+        // 3. Highlight the interval select dropdown with attention pulse
+        const selectElem = shadowRoot.getElementById('jigra-hud-interval-select');
+        if (selectElem) {
+          selectElem.classList.remove('jigra-pulse-focus');
+          void selectElem.offsetWidth;
+          selectElem.classList.add('jigra-pulse-focus');
+          setTimeout(() => selectElem?.classList.remove('jigra-pulse-focus'), 1500);
+        }
         return;
       }
       if (typeof JigraAudio !== 'undefined') JigraAudio.playClick();
@@ -429,6 +455,17 @@
       settingsData = updated.settings;
       renderCompanionUI();
       toggleHUD(true);
+
+      const hudAlert = shadowRoot.getElementById('jigra-hud-alert');
+      if (hudAlert) {
+        hudAlert.innerHTML = `✅ Interval updated to <strong>${JigraStorage.GAME_INTERVAL_MODES[newMode]?.label || newMode}</strong>!`;
+        hudAlert.style.display = 'block';
+        hudAlert.style.borderColor = 'rgba(34, 197, 94, 0.5)';
+        hudAlert.style.color = '#86efac';
+        setTimeout(() => {
+          if (hudAlert) hudAlert.style.display = 'none';
+        }, 4000);
+      }
       showSpeechBubble(`🎮 Game interval set: ${JigraStorage.GAME_INTERVAL_MODES[newMode]?.label || newMode}`, 3500);
     });
   }
@@ -537,6 +574,15 @@
     root.style.position = 'fixed';
     root.style.left = `${currentPosX}px`;
     root.style.top = `${currentPosY}px`;
+
+    const midX = window.innerWidth / 2;
+    const isDockLeft = currentPosX < midX;
+    const isDockTop = currentPosY < 260;
+
+    root.classList.toggle('dock-left', isDockLeft);
+    root.classList.toggle('dock-right', !isDockLeft);
+    root.classList.toggle('dock-top', isDockTop);
+    root.classList.toggle('dock-bottom', !isDockTop);
   }
 
   function setupDragEvents() {
@@ -613,16 +659,19 @@
   }
 
   function toggleHUD(forceState) {
-    const hud = shadowRoot.getElementById('jigra-hud');
+    const hud = shadowRoot?.getElementById('jigra-hud');
+    const root = shadowRoot?.getElementById('jigra-root');
     if (!hud) return;
     const isOpen = hud.classList.contains('open');
     const nextState = forceState !== undefined ? forceState : !isOpen;
 
     if (nextState) {
       hud.classList.add('open');
+      if (root) root.classList.add('hud-open');
       if (typeof JigraAudio !== 'undefined') JigraAudio.playClick();
     } else {
       hud.classList.remove('open');
+      if (root) root.classList.remove('hud-open');
     }
   }
 
