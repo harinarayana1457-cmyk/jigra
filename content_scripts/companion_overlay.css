@@ -289,24 +289,14 @@
   border-color: rgba(15, 23, 42, 0.97) transparent transparent transparent;
 }
 
-/* When HUD is open, position speech bubble cleanly beside the HUD (no overlap) */
-.jigra-companion-root.hud-open .jigra-speech-bubble {
-  right: 316px;
-  bottom: calc(100% + 14px);
-  margin-bottom: 0;
-  width: 340px;
-  max-width: calc(100vw - 350px);
-}
-
-.jigra-companion-root.hud-open .jigra-speech-bubble::after {
-  bottom: 20px;
-  top: auto;
-  right: -12px;
-  left: auto;
-  transform: none;
-  border-width: 6px;
-  border-style: solid;
-  border-color: transparent transparent transparent rgba(15, 23, 42, 0.97);
+/* When HUD is open, NEVER show floating speech bubble over or near HUD */
+.jigra-companion-root.hud-open .jigra-speech-bubble,
+.jigra-hud-panel.open ~ .jigra-speech-bubble,
+.jigra-companion-root:has(.jigra-hud-panel.open) .jigra-speech-bubble {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
 }
 
 /* Docked to Left Edge */
@@ -323,22 +313,6 @@
 .jigra-companion-root.dock-left .jigra-speech-bubble::after {
   left: 32px;
   right: auto;
-}
-
-.jigra-companion-root.dock-left.hud-open .jigra-speech-bubble {
-  left: 316px;
-  right: auto;
-  bottom: calc(100% + 14px);
-  margin-bottom: 0;
-}
-
-.jigra-companion-root.dock-left.hud-open .jigra-speech-bubble::after {
-  bottom: 20px;
-  top: auto;
-  left: -12px;
-  right: auto;
-  transform: none;
-  border-color: transparent rgba(15, 23, 42, 0.97) transparent transparent;
 }
 
 /* Docked to Top Edge */

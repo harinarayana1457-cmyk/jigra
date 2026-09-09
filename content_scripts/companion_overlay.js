@@ -407,10 +407,7 @@
       if (!gameAccess.allowed) {
         if (typeof JigraAudio !== 'undefined') JigraAudio.playWarning();
 
-        // 1. Show speech bubble positioned cleanly beside the HUD
-        showSpeechBubble(`🔒 ${gameAccess.reason} (Tip: Select 'Anytime' above for Free Play!)`, 6000);
-
-        // 2. Display inline alert inside HUD right between dropdown and button
+        // Display inline alert inside HUD right between dropdown and buttons (never covers buttons!)
         const hudAlert = shadowRoot.getElementById('jigra-hud-alert');
         if (hudAlert) {
           hudAlert.innerHTML = `🔒 <strong>${gameAccess.reason}</strong><br><span style="color:#fdba74;">Tip: Switch to <u>Anytime (Free Play)</u> in the dropdown above ☝️</span>`;
@@ -420,7 +417,7 @@
           }, 6000);
         }
 
-        // 3. Highlight the interval select dropdown with attention pulse
+        // Highlight the interval select dropdown with attention pulse
         const selectElem = shadowRoot.getElementById('jigra-hud-interval-select');
         if (selectElem) {
           selectElem.classList.remove('jigra-pulse-focus');
@@ -466,7 +463,6 @@
           if (hudAlert) hudAlert.style.display = 'none';
         }, 4000);
       }
-      showSpeechBubble(`🎮 Game interval set: ${JigraStorage.GAME_INTERVAL_MODES[newMode]?.label || newMode}`, 3500);
     });
   }
 
@@ -661,6 +657,7 @@
   function toggleHUD(forceState) {
     const hud = shadowRoot?.getElementById('jigra-hud');
     const root = shadowRoot?.getElementById('jigra-root');
+    const bubble = shadowRoot?.getElementById('jigra-bubble');
     if (!hud) return;
     const isOpen = hud.classList.contains('open');
     const nextState = forceState !== undefined ? forceState : !isOpen;
@@ -668,16 +665,42 @@
     if (nextState) {
       hud.classList.add('open');
       if (root) root.classList.add('hud-open');
+      // Hide speech bubble immediately so it NEVER blocks HUD or buttons!
+      if (bubble) {
+        bubble.classList.remove('visible');
+        bubble.style.display = 'none';
+      }
       if (typeof JigraAudio !== 'undefined') JigraAudio.playClick();
     } else {
       hud.classList.remove('open');
       if (root) root.classList.remove('hud-open');
+      if (bubble) {
+        bubble.style.display = '';
+      }
     }
   }
 
   function showSpeechBubble(content, duration = 4500) {
-    const bubble = shadowRoot.getElementById('jigra-bubble');
+    const hud = shadowRoot?.getElementById('jigra-hud');
+    const isHUDOpen = hud?.classList.contains('open');
+
+    // If HUD is currently open, route notification to the inline alert inside the HUD (never over buttons!)
+    if (isHUDOpen) {
+      const hudAlert = shadowRoot?.getElementById('jigra-hud-alert');
+      if (hudAlert) {
+        const text = typeof content === 'string' ? content : (content?.text || '');
+        hudAlert.innerHTML = text;
+        hudAlert.style.display = 'block';
+        setTimeout(() => {
+          if (hudAlert) hudAlert.style.display = 'none';
+        }, duration || 5000);
+      }
+      return;
+    }
+
+    const bubble = shadowRoot?.getElementById('jigra-bubble');
     if (!bubble) return;
+    bubble.style.display = '';
 
     if (speechTimeout) clearTimeout(speechTimeout);
 
