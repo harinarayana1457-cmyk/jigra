@@ -716,7 +716,7 @@
         html += `<div class="jigra-bubble-body">${content.text}</div>`;
       }
       if (content.actionText) {
-        html += `<button class="jigra-bubble-btn" id="jigra-bubble-act-btn">${content.actionText}</button>`;
+        html += `<div class="jigra-bubble-action-row"><button class="jigra-bubble-btn" id="jigra-bubble-act-btn">${content.actionText}</button></div>`;
       }
       bubble.innerHTML = html;
 
