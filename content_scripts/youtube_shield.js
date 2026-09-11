@@ -14,6 +14,7 @@
   let holdInterval = null;
   let holdProgress = 0;
   let spaPollIntervalId = null;
+  let lastUrl = location.href;
 
   function cleanupShield() {
     if (spaPollIntervalId) {
@@ -120,7 +121,7 @@
     window.addEventListener('yt-page-data-updated', handleNavigation);
     window.addEventListener('popstate', handleNavigation);
 
-    // Polling fallback for SPA URL changes
+    // Polling fallback for SPA URL changes and timer ticking
     spaPollIntervalId = setInterval(() => {
       if (!isContextValid()) {
         cleanupShield();
@@ -137,7 +138,7 @@
           cleanupShield();
         }
       }
-    }, 1000);
+    }, 500);
 
     handleNavigation();
   }
@@ -161,6 +162,7 @@
         isShieldActive = true;
       }
       injectHeaderBadge();
+      updateTimerDisplay();
     } else {
       html.classList.remove('jigra-shield-active');
       isShieldActive = false;
@@ -206,25 +208,29 @@
   }
 
   function getCalculatedRemaining() {
-    if (targetTimestamp && currentTimerState === 'FOCUS') {
+    if (targetTimestamp && (currentTimerState === 'FOCUS' || currentTimerState === 'BREAK')) {
       return Math.max(0, Math.ceil((targetTimestamp - Date.now()) / 1000));
     }
     return remainingSeconds || 0;
   }
 
   function updateTimerDisplay() {
+    if (currentTimerState === 'FOCUS' && !document.getElementById('jigra-yt-status-badge')) {
+      injectHeaderBadge();
+    }
+
     const remaining = getCalculatedRemaining();
     const formatted = formatTime(remaining);
 
     // Update blocker timer
     const timerElem = document.getElementById('jigra-blocker-countdown');
-    if (timerElem) {
+    if (timerElem && timerElem.textContent !== formatted) {
       timerElem.textContent = formatted;
     }
 
     // Update header badge
     const badgeTime = document.getElementById('jigra-badge-time');
-    if (badgeTime) {
+    if (badgeTime && badgeTime.textContent !== formatted) {
       badgeTime.textContent = formatted;
     }
   }
@@ -353,7 +359,9 @@
     const targets = [
       document.querySelector('ytd-masthead #end'),
       document.querySelector('ytd-masthead #buttons'),
-      document.querySelector('#masthead-container')
+      document.querySelector('#masthead-container #end'),
+      document.querySelector('#masthead-container'),
+      document.querySelector('ytd-masthead')
     ];
 
     const target = targets.find((el) => !!el);
