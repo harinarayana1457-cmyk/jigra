@@ -7,7 +7,7 @@
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6%2B%20Vanilla-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![Web Audio](https://img.shields.io/badge/Audio-Procedural%20Web%20Audio-FF5722?style=for-the-badge&logo=soundcharts&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API)
 [![UI Technology](https://img.shields.io/badge/UI-Shadow%20DOM%20%2B%20Glassmorphism-9C27B0?style=for-the-badge&logo=w3c&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM)
-[![Compatibility](https://img.shields.io/badge/Browsers-Chrome%20%7C%20Brave%20%7C%20Edge%20%7C%20Arc-00C7B7?style=for-the-badge&logo=brave&logoColor=white)](https://github.com/harinarayana1457-cmyk/jigra)
+[![Compatibility](https://img.shields.io/badge/Browsers-Chrome%20%7C%20Brave%20%7C%20Edge%20%7C%20Arc-00C7B7?style=for-the-badge&logo=brave&logoColor=white)](https://github.com/harinarayana1457-cmyk/jigra-focus-shield)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
 <p align="center">
@@ -58,7 +58,7 @@
 ```mermaid
 flowchart TD
     subgraph UI ["User Entry & Controls"]
-        A["Toolbar Popup / Dashboard"] -->|Configure & Start Sprint| B["Service Worker Engine"]
+        A["Toolbar Popup & Dashboard"] -->|Configure & Start Sprint| B["Service Worker Engine"]
         A -->|Customize Companion & Games| C["Options Dashboard"]
     end
 
@@ -69,14 +69,14 @@ flowchart TD
     end
 
     subgraph ContentLayer ["Content Injection Layer"]
-        F -->|*://*.youtube.com/*| G["YouTube Shield (CSS Suppression & Shorts Blocker)"]
-        F -->|<all_urls>| H["Shadow DOM Companion Overlay"]
+        F -->|YouTube Domain Match| G["YouTube Shield (CSS Suppression & Shorts Blocker)"]
+        F -->|Web Browsing Match| H["Shadow DOM Companion Overlay"]
         H --> I["Reactive Emote Animations & Procedural Audio"]
         H --> J["60s Break Arcade: Memory Matrix / Speed Typer"]
     end
 
     subgraph FeedbackLoop ["Gamification & Reward Cycle"]
-        J -->|Sprint / Game Complete| K["+Sparks Reward & Evolution XP"]
+        J -->|Sprint / Game Complete| K["Sparks Reward & Evolution XP"]
         K --> E
         E -->|Hot-Reload Equipped Skin & Hat| H
     end
@@ -90,8 +90,8 @@ Works on any modern Chromium browser (**Google Chrome**, **Brave**, **Microsoft 
 
 ### 1. Clone or Download the Repository
 ```bash
-git clone https://github.com/harinarayana1457-cmyk/jigra.git
-cd jigra
+git clone https://github.com/harinarayana1457-cmyk/jigra-focus-shield.git
+cd jigra-focus-shield
 ```
 
 ### 2. Load into Your Browser
@@ -138,7 +138,7 @@ Follow this checklist to verify all subsystems:
 ## 📁 Project Structure
 
 ```text
-jigra/
+jigra-focus-shield/
 ├── background/
 │   └── service_worker.js         # Manifest V3 worker, chrome.alarms, notifications & state dispatch
 ├── content_scripts/
